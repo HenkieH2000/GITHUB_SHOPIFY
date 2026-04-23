@@ -1,0 +1,254 @@
+{% comment %}
+  Bestandsnaam: snippets/henk-installatieservice.liquid
+  Update: Switch pixel-perfect + card zonder schaduw + radius 10px
+{% endcomment %}
+
+{% assign variant_id = 51630648459600 %}
+
+<div class="h-inst-container">
+  <div class="h-inst-card">
+    <div class="h-inst-main">
+      <div class="h-inst-left">
+        <label class="h-inst-switch">
+          <input type="checkbox" id="inst-toggle-service" class="h-inst-checkbox">
+          <span class="h-inst-slider"></span>
+        </label>
+        <div class="h-inst-text">
+          <div class="h-inst-icon-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="h-inst-text-inner">
+            <span class="h-inst-title">Montage en Installatie</span>
+            <span class="h-inst-sub">Professioneel ingebouwd</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-inst-right">
+        <span class="h-inst-price">+149,-</span>
+        <a href="https://www.vctparts.nl/products/inbouwservice-scherm-hardenberg-betaling-na-installatie-1"
+           class="h-inst-info-link" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="h-inst-footer">
+      <svg class="h-inst-warning" width="14" height="14" viewBox="0 0 24 24"
+           fill="none" stroke="#ff7e00" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <span>De betaling voor de installatie is <strong>achteraf</strong>.</span>
+    </div>
+  </div>
+</div>
+
+<style>
+.h-inst-container {
+  width: 100% !important;
+  margin: 12px 0 !important;
+  clear: both !important;
+  font-family: inherit;
+}
+
+.h-inst-card {
+  border-radius: 10px !important;
+  padding: 11px 14px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e8eaf0 !important;
+}
+
+.h-inst-main {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 10px !important;
+}
+
+.h-inst-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.h-inst-icon-wrap {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: #fff0e0 !important;
+  color: #FF7E00 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.h-inst-text {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.h-inst-text-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+}
+
+.h-inst-title {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #030a22 !important;
+  line-height: 1.3 !important;
+}
+
+.h-inst-sub {
+  font-size: 12px !important;
+  color: #6b7280 !important;
+  line-height: 1.3 !important;
+}
+
+.h-inst-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.h-inst-price {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #030a22 !important;
+}
+
+/* ===== SWITCH ===== */
+.h-inst-switch {
+  position: relative !important;
+  display: inline-flex !important;
+  width: 44px !important;
+  height: 24px !important;
+  flex-shrink: 0 !important;
+}
+
+.h-inst-checkbox {
+  position: absolute !important;
+  inset: 0 !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  z-index: 2 !important;
+}
+
+.h-inst-slider {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #d1d5db !important;
+  border-radius: 999px !important;
+  transition: background-color 0.2s ease !important;
+  overflow: hidden !important;
+}
+
+.h-inst-slider::before {
+  content: "" !important;
+  position: absolute !important;
+  width: 18px !important;
+  height: 18px !important;
+  left: 3px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  background-color: #ffffff !important;
+  border-radius: 50% !important;
+  transition: transform 0.2s ease !important;
+}
+
+.h-inst-checkbox:checked + .h-inst-slider {
+  background-color: #ff7e00 !important;
+}
+
+.h-inst-checkbox:checked + .h-inst-slider::before {
+  transform: translate(17px, -50%) !important;
+}
+
+/* Footer */
+.h-inst-footer {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+  color: #6b7280 !important;
+  border-top: 1px solid #f0f2f5 !important;
+  padding-top: 10px !important;
+}
+
+.h-inst-footer strong {
+  color: #030a22 !important;
+}
+
+.h-inst-info-link {
+  color: #9ca3af !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: 0.2s !important;
+}
+
+.h-inst-info-link:hover {
+  color: #ff7e00 !important;
+}
+</style>
+
+<script>
+(function() {
+  const serviceId = {{ variant_id }};
+  const originalFetch = window.fetch;
+
+  window.fetch = function() {
+    let url = arguments[0];
+    let options = arguments[1];
+    const checkbox = document.getElementById('inst-toggle-service');
+
+    if (url && url.includes('/cart/add') && checkbox && checkbox.checked && options && options.body) {
+      try {
+        if (typeof options.body === 'string') {
+          let bodyData = JSON.parse(options.body);
+
+          if (bodyData.items) {
+            bodyData.items.push({ id: serviceId, quantity: 1 });
+          } else {
+            const firstId = bodyData.id;
+            const firstQty = bodyData.quantity || 1;
+            const firstProps = bodyData.properties || {};
+
+            delete bodyData.id;
+            delete bodyData.quantity;
+            delete bodyData.properties;
+
+            bodyData.items = [
+              { id: parseInt(firstId), quantity: parseInt(firstQty), properties: firstProps },
+              { id: serviceId, quantity: 1 }
+            ];
+          }
+          options.body = JSON.stringify(bodyData);
+        } else if (options.body instanceof FormData) {
+          options.body.append('items[1][id]', serviceId);
+          options.body.append('items[1][quantity]', 1);
+        }
+      } catch (e) {
+        console.error("Henk-installatie: Interceptor error.");
+      }
+    }
+
+    return originalFetch.apply(this, arguments);
+  };
+})();
+</script>

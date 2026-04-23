@@ -1,0 +1,222 @@
+{% comment %}
+  Snippet: snippets/henk-upsell-products.liquid
+  Gebruik: {% render 'henk-upsell-products' %}
+{% endcomment %}
+
+{% assign minimum_bundle_discount = 5 %}
+
+<div class="bundle-wrapper" 
+     data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=2">
+    
+  <h2 class="bundle-header">Maak bundel compleet</h2>
+  
+  <div class="bundle-list">
+    <div class="bundle-recommendations-container">
+      
+      {% if recommendations.performed and recommendations.products_count > 0 %}
+        {% for item in recommendations.products limit: 2 %}
+          
+          {% assign base_price = item.price %}
+          {% assign compare_price = item.compare_at_price %}
+          {% assign active_discount_percentage = 0.0 %}
+          {% assign final_percentage_to_apply = minimum_bundle_discount %}
+
+          {% if compare_price > base_price %}
+              {% assign price_difference = compare_price | minus: base_price %}
+              {% assign active_discount_percentage = price_difference | times: 100.0 | divided_by: compare_price | ceil %}
+          {% endif %}
+          
+          {% if active_discount_percentage > minimum_bundle_discount %}
+              {% assign final_percentage_to_apply = active_discount_percentage %}
+              {% assign display_old_price = compare_price %}
+          {% else %}
+              {% assign final_percentage_to_apply = minimum_bundle_discount %}
+              {% assign display_old_price = base_price %}
+          {% endif %}
+
+          {% assign discount_factor = 100.0 | minus: final_percentage_to_apply | divided_by: 100.0 %}
+          {% assign final_discounted_price = base_price | times: discount_factor | round %}
+          
+          <div class="bundle-card recommended-product" data-price="{{ final_discounted_price }}" data-variant-id="{{ item.selected_or_first_available_variant.id }}">
+            
+            <div class="bundle-checkbox-wrapper">
+              <label class="bundle-custom-checkbox">
+                <input type="checkbox" class="bundle-checkbox add-on-checkbox" value="{{ item.selected_or_first_available_variant.id }}">
+                <span class="bundle-checkmark">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+              </label>
+            </div>
+
+            <a href="{{ item.url }}" class="bundle-image-wrap">
+              <img src="{{ item.featured_image | img_url: '100x' }}" alt="{{ item.title }}">
+            </a>
+
+            <div class="bundle-info">
+              <div class="bundle-title">{{ item.title }}</div>
+              <div class="bundle-prices">
+                <span class="price-current">{{ final_discounted_price | money | replace: ',00', ',-' }}</span>
+                <span class="price-old">{{ display_old_price | money | replace: ',00', ',-' }}</span>
+                <span class="discount-badge">-{{ final_percentage_to_apply }}%</span>
+              </div>
+            </div>
+
+            <a href="{{ item.url }}" class="bundle-info-btn bundle-icon-link" title="Meer info">
+              <div class="info-circle">i</div>
+            </a>
+
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bundle-footer"></div>
+</div>
+
+<style>
+  .bundle-wrapper { margin-top: 12px; margin-bottom: 0; }
+  .bundle-header { font-size: 13px; font-weight: 700; color: #030a22; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .bundle-header svg { color: #FF7E00; flex-shrink: 0; }
+  .bundle-recommendations-container { display: flex; flex-direction: column; gap: 8px; }
+  .bundle-card { display: flex; align-items: center; gap: 0; border: 1px solid #e8eaf0; border-radius: 10px; padding: 10px 12px; background: #fff; cursor: pointer; user-select: none; transition: border-color 0.2s ease, background 0.2s ease; position: relative; }
+  .bundle-card:hover { background: #fafafa; border-color: #d0d3dc; }
+  .bundle-card.is-checked { border-color: #FF7E00; background: #fffaf5; }
+  .bundle-checkbox-wrapper { padding-right: 12px; flex-shrink: 0; }
+  .bundle-custom-checkbox { display: block; cursor: pointer; }
+  .bundle-custom-checkbox input { display: none; }
+  .bundle-checkmark { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #d1d5db; background: #fff; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; flex-shrink: 0; }
+  .bundle-checkmark svg { color: #fff; opacity: 0; transition: opacity 0.15s ease; }
+  .bundle-custom-checkbox input:checked + .bundle-checkmark { background: #FF7E00; border-color: #FF7E00; }
+  .bundle-custom-checkbox input:checked + .bundle-checkmark svg { opacity: 1; }
+  .bundle-image-wrap { flex-shrink: 0; display: block; margin-right: 12px; }
+  .bundle-image-wrap img { width: 48px; height: 48px; object-fit: contain; border-radius: 6px; border: 1px solid #f0f2f5; display: block; }
+  .bundle-info { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .bundle-title { font-size: 12px; font-weight: 600; color: #030a22; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .bundle-prices { display: flex; align-items: center; gap: 6px; }
+  .price-current { font-size: 13px; font-weight: 700; color: #030a22; }
+  .price-old { font-size: 11px; color: #9ca3af; text-decoration: line-through; }
+  .discount-badge { background: #FE0000; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 8px; line-height: 1.4; }
+  .bundle-info-btn { padding-left: 10px; flex-shrink: 0; display: flex; align-items: center; text-decoration: none; }
+  .info-circle { width: 22px; height: 22px; background: #fff0e0; color: #FF7E00; border-radius: 50%; text-align: center; line-height: 22px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+  .bundle-info-btn:hover .info-circle { background: #FF7E00; color: #fff; }
+  .bundle-footer { height: 0; overflow: hidden; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const wrapper = document.querySelector('.bundle-wrapper');
+  if (!wrapper) return;
+
+  const container = wrapper.querySelector('.bundle-recommendations-container');
+  const baseUrl = wrapper.dataset.url;
+  const complementaryUrl = baseUrl + '&intent=complementary';
+  const productForm = document.querySelector('form[action*="/cart/add"]');
+  
+  if (!productForm) { wrapper.style.display = 'none'; return; }
+
+  function fetchCards(url) {
+    return fetch(url)
+      .then(response => response.text())
+      .then(text => {
+        const html = document.createElement('div');
+        html.innerHTML = text;
+        return Array.from(html.querySelectorAll('.bundle-card'));
+      })
+      .catch(() => []);
+  }
+
+  Promise.all([fetchCards(complementaryUrl), fetchCards(baseUrl)])
+  .then(([complementaryCards, standardCards]) => {
+    
+    let finalCards = [...complementaryCards];
+
+    if (finalCards.length < 2) {
+      const existingIds = finalCards.map(card => card.dataset.variantId);
+      for (const card of standardCards) {
+        if (finalCards.length >= 2) break;
+        if (!existingIds.includes(card.dataset.variantId)) {
+          finalCards.push(card);
+          existingIds.push(card.dataset.variantId);
+        }
+      }
+    }
+
+    if (finalCards.length === 0) { wrapper.style.display = 'none'; return; }
+
+    container.innerHTML = '';
+    finalCards.forEach(card => container.appendChild(card));
+
+    container.querySelectorAll('.bundle-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('.bundle-icon-link')) return;
+        const checkbox = this.querySelector('.bundle-checkbox');
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          this.classList.toggle('is-checked', checkbox.checked);
+        }
+      });
+    });
+
+  })
+  .catch(e => {
+    console.error("Fout bij het laden van aanbevelingen:", e);
+    wrapper.style.display = 'none';
+  });
+
+  productForm.addEventListener('submit', function(e) {
+    const checkedBundleItems = wrapper.querySelectorAll('.recommended-product .add-on-checkbox:checked');
+    if (checkedBundleItems.length === 0) return;
+
+    e.preventDefault();
+    let itemsToAdd = [];
+
+    const mainVariantInput = productForm.querySelector('[name="id"]');
+    if (mainVariantInput && mainVariantInput.value) {
+      const quantityInput = productForm.querySelector('[name="quantity"]');
+      const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+      itemsToAdd.push({ id: mainVariantInput.value, quantity: quantity });
+    }
+
+    checkedBundleItems.forEach(box => {
+      itemsToAdd.push({
+        id: box.value,
+        quantity: 1,
+        properties: { _upsell: 'true' }
+      });
+    });
+
+    let data = { items: itemsToAdd };
+    if (checkedBundleItems.length > 0) {
+      data.attributes = { 'Upsell gebruikt': 'henk-upsell' };
+    }
+
+    const submitButton = productForm.querySelector('[type="submit"]');
+    const originalText = submitButton ? submitButton.innerText : 'Toevoegen aan winkelwagen';
+    if (submitButton) submitButton.innerText = 'Producten worden toegevoegd...';
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      if (response.ok) {
+        document.dispatchEvent(new CustomEvent('cart:add', { bubbles: true, detail: { items: itemsToAdd } }));
+        document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+        if (submitButton) {
+          submitButton.innerText = 'Toegevoegd aan winkelwagen!';
+          setTimeout(() => { submitButton.innerText = originalText; }, 1500);
+        }
+      } else {
+        response.json().then(data => alert('Fout bij toevoegen: ' + (data.message || 'Controleer de productvarianten.')));
+        if (submitButton) submitButton.innerText = originalText;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      if (submitButton) submitButton.innerText = originalText;
+    });
+  });
+});
+</script>

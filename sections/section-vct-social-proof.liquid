@@ -1,0 +1,72 @@
+{% comment %}
+  VCT Social Proof — toast container + live viewer counter
+  This section is invisible (0px height) — it only injects the
+  toast container and viewer badge markup.
+  Add once on homepage template.
+{% endcomment %}
+
+{% assign products_json = '' %}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'product' -%}
+    {%- assign product_title = block.settings.product_title -%}
+    {%- unless forloop.first -%}{% assign products_json = products_json | append: ',' %}{%- endunless -%}
+    {% assign products_json = products_json | append: '"' | append: product_title | append: '"' %}
+  {%- endif -%}
+{%- endfor -%}
+
+<div id="vct-sp-toasts"
+     class="vct-sp-toasts-wrapper"
+     data-products="[{{ products_json }}]"
+     aria-live="polite"
+     aria-atomic="false"
+     aria-label="Recente aankopen"></div>
+
+{%- if section.settings.show_viewer_badge -%}
+  <div class="vct-viewer-badge vct-reveal" id="vct-viewer-badge">
+    <span class="vct-viewer-dot"></span>
+    <span class="vct-viewer-count">12</span>
+    <span>mensen bekijken dit nu</span>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "VCT Social Proof",
+  "tag": "section",
+  "class": "vct-section-social-proof",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_viewer_badge",
+      "label": "Toon 'bekijken dit nu' badge op productpagina",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Gekocht product",
+      "settings": [
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Productnaam in toast",
+          "default": "een motorsport onderdeel"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "VCT Social Proof",
+      "blocks": [
+        {"type": "product", "settings": {"product_title": "Racing remblokken"}},
+        {"type": "product", "settings": {"product_title": "Sport uitlaatsysteem"}},
+        {"type": "product", "settings": {"product_title": "Carbon spiegels"}},
+        {"type": "product", "settings": {"product_title": "Coilover set"}},
+        {"type": "product", "settings": {"product_title": "Sway bar kit"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

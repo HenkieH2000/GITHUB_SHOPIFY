@@ -1,0 +1,154 @@
+/*
+ * Swiper layout CSS — essential rules only.
+ *
+ * screen.css already provides:
+ *   .swiper-wrapper, .swiper-slide { list-style:none; margin:0; padding:0 }
+ *
+ * What was MISSING (causing slides to stack vertically):
+ *   - .swiper-wrapper { display: flex }          ← horizontal row
+ *   - .swiper-slide  { flex-shrink: 0 }          ← prevents collapse
+ *
+ * This file is loaded async by the theme when a slider is present.
+ * Do NOT add to screen.css (it's async-loaded to keep initial paint fast).
+ */
+
+/* ── Core layout ───────────────────────────────────────────────────────── */
+
+.swiper {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* THE critical rule — without this slides stack vertically */
+.swiper-wrapper {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  transition-property: transform;
+  box-sizing: content-box;
+}
+
+.swiper-slide {
+  flex-shrink: 0;
+  width: 100%;
+  position: relative;
+  transition-property: transform;
+}
+
+.swiper-slide-invisible-blank {
+  visibility: hidden;
+}
+
+/* ── Auto height ───────────────────────────────────────────────────────── */
+
+.swiper.autoheight .swiper-slide,
+.swiper-container-autoheight .swiper-slide {
+  height: auto;
+}
+
+.swiper.autoheight .swiper-wrapper,
+.swiper-container-autoheight .swiper-wrapper {
+  align-items: flex-start;
+  transition-property: transform, height;
+}
+
+/* ── Pagination bullets ────────────────────────────────────────────────── */
+
+.swiper-pagination {
+  position: absolute;
+  text-align: center;
+  transition: opacity 300ms;
+  transform: translate3d(0, 0, 0);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.swiper-pagination-clickable .swiper-pagination-bullet {
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.swiper-pagination-bullets.swiper-pagination-horizontal {
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+}
+
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--primary_bg_btn, #ff7e00);
+  opacity: 1;
+}
+
+/* Fraction pagination */
+.swiper-pagination-fraction {
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  color: inherit;
+}
+
+/* ── Navigation arrows ─────────────────────────────────────────────────── */
+
+.swiper-button-prev,
+.swiper-button-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-button-disabled {
+  opacity: 0.35;
+  cursor: auto;
+  pointer-events: none;
+}
+
+.swiper-button-hidden {
+  opacity: 0;
+  cursor: auto;
+  pointer-events: none;
+}
+
+/* ── RTL support ───────────────────────────────────────────────────────── */
+
+[dir="rtl"] .swiper-wrapper {
+  flex-direction: row-reverse;
+}
+
+/* ── Transition timing ─────────────────────────────────────────────────── */
+
+.swiper-android .swiper-slide,
+.swiper-wrapper {
+  transform: translate3d(0, 0, 0);
+}
+
+.autoplay .swiper-wrapper {
+  transition-timing-function: linear;
+}
+
+/* ── Outer wrapper used by this theme ──────────────────────────────────── */
+
+.swiper-outer {
+  position: relative;
+  overflow: hidden;
+}
+
+.swiper-outer > .swiper-wrapper {
+  display: flex;
+}

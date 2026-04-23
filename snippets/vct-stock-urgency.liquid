@@ -1,0 +1,42 @@
+{% comment %}
+  VCT Stock Urgency — renders a contextual urgency indicator
+  based on product inventory level.
+
+  Usage (include in product card or product page):
+    {% render 'vct-stock-urgency', product: product, variant: current_variant %}
+
+  Shows nothing when stock > threshold_hide (default 15).
+  Shows low-stock bar when stock <= threshold_low (default 8).
+  Shows "back in stock" style when stock == 0 (sold out handled by Shopify itself).
+{% endcomment %}
+
+{%- liquid
+  assign qty = variant.inventory_quantity | default: product.selected_or_first_available_variant.inventory_quantity
+  assign policy = variant.inventory_policy | default: product.selected_or_first_available_variant.inventory_policy
+  assign threshold_low = 8
+  assign threshold_hide = 15
+-%}
+
+{%- if product.available and qty != nil and qty <= threshold_hide -%}
+  {%- if qty <= 0 -%}
+    {%- comment -%}Sold out handled by Shopify theme — skip{%- endcomment -%}
+  {%- elsif qty <= 3 -%}
+    <div class="vct-stock-urgency vct-stock--critical" aria-live="polite">
+      <span class="vct-stock-dot vct-stock-dot--red"></span>
+      <span>Nog maar <strong>{{ qty }}</strong> op voorraad!</span>
+    </div>
+  {%- elsif qty <= threshold_low -%}
+    <div class="vct-stock-urgency vct-stock--low" aria-live="polite">
+      <span class="vct-stock-dot vct-stock-dot--orange"></span>
+      <span>Nog <strong>{{ qty }}</strong> beschikbaar</span>
+      <div class="vct-stock-bar" role="progressbar" aria-valuenow="{{ qty }}" aria-valuemin="0" aria-valuemax="{{ threshold_low }}">
+        <div class="vct-stock-bar__fill" style="width:{{ qty | times: 100 | divided_by: threshold_low }}%"></div>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="vct-stock-urgency vct-stock--ok">
+      <span class="vct-stock-dot vct-stock-dot--green"></span>
+      <span>Op voorraad</span>
+    </div>
+  {%- endif -%}
+{%- endif -%}

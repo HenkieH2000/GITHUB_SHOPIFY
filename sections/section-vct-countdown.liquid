@@ -1,0 +1,134 @@
+{% comment %}
+  VCT Flash Sale Countdown — configurable urgency timer
+  Use in theme editor: Add Section → VCT Flash Sale Countdown
+{% endcomment %}
+
+{%- liquid
+  assign end_time = section.settings.end_time | default: ''
+  assign label = section.settings.label | default: 'Flash Sale eindigt over'
+  assign bg = section.settings.background_color
+  assign accent = section.settings.accent_color
+-%}
+
+<div class="vct-countdown-section vct-reveal"
+     data-end="{{ end_time }}"
+     style="background:{{ bg }};">
+  <div class="vct-countdown__inner page-width">
+    {%- if section.settings.icon_html != blank -%}
+      <span class="vct-countdown__icon" aria-hidden="true">{{ section.settings.icon_html }}</span>
+    {%- else -%}
+      <span class="vct-countdown__icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </span>
+    {%- endif -%}
+    <span class="vct-countdown__label">{{ label }}</span>
+    <div class="vct-countdown__digits" style="--vct-accent:{{ accent }};">
+      <div class="vct-cd-unit"><span class="vct-cd-num" id="vct-cd-{{ section.id }}-h">--</span><span class="vct-cd-lbl">uur</span></div>
+      <span class="vct-cd-sep">:</span>
+      <div class="vct-cd-unit"><span class="vct-cd-num" id="vct-cd-{{ section.id }}-m">--</span><span class="vct-cd-lbl">min</span></div>
+      <span class="vct-cd-sep">:</span>
+      <div class="vct-cd-unit"><span class="vct-cd-num" id="vct-cd-{{ section.id }}-s">--</span><span class="vct-cd-lbl">sec</span></div>
+    </div>
+    {%- if section.settings.cta_label != blank and section.settings.cta_url != blank -%}
+      <a href="{{ section.settings.cta_url }}" class="vct-countdown__cta btn">{{ section.settings.cta_label }}</a>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+(function(){
+  var sec = document.querySelector('[data-end="{{ end_time }}"].vct-countdown-section');
+  if(!sec) return;
+
+  var endRaw = sec.dataset.end;
+  var endDate;
+
+  if(endRaw && endRaw.length > 0){
+    endDate = new Date(endRaw);
+  } else {
+    // Default: next midnight if no end date set
+    endDate = new Date();
+    endDate.setHours(23,59,59,0);
+  }
+
+  var hEl = document.getElementById('vct-cd-{{ section.id }}-h');
+  var mEl = document.getElementById('vct-cd-{{ section.id }}-m');
+  var sEl = document.getElementById('vct-cd-{{ section.id }}-s');
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function tick(){
+    var now = Date.now();
+    var diff = Math.max(0, endDate - now);
+    if(diff === 0){
+      sec.style.display = 'none';
+      return;
+    }
+    var totalSec = Math.floor(diff / 1000);
+    var h = Math.floor(totalSec / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var s = totalSec % 60;
+    hEl.textContent = pad(h);
+    mEl.textContent = pad(m);
+    sEl.textContent = pad(s);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "VCT Flash Sale Timer",
+  "tag": "section",
+  "class": "vct-section-countdown",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label tekst",
+      "default": "🔥 Flash Sale eindigt over"
+    },
+    {
+      "type": "text",
+      "id": "end_time",
+      "label": "Eindtijd (ISO formaat: bijv. 2026-05-01T23:59:59)",
+      "info": "Laat leeg voor automatisch middernacht vandaag"
+    },
+    {
+      "type": "html",
+      "id": "icon_html",
+      "label": "Eigen SVG icoon (optioneel)"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Knop tekst",
+      "default": "Bekijk aanbiedingen"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Knop URL"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Achtergrondkleur",
+      "default": "#030a22"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accentkleur (cijfers)",
+      "default": "#ff7e00"
+    }
+  ],
+  "presets": [
+    {
+      "name": "VCT Flash Sale Timer"
+    }
+  ]
+}
+{% endschema %}

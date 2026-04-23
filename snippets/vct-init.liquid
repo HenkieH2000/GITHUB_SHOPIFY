@@ -1,0 +1,77 @@
+{% comment %}
+  VCT Init — scroll-reveal stagger + social proof JS
+  Include once in theme.liquid just before </body>
+{% endcomment %}
+<script>
+(function(){
+  /* ── Scroll-reveal stagger ──────────────────────────────────────── */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('vct-visible');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+
+  function initStagger(){
+    document.querySelectorAll('.vct-stagger > *').forEach(function(el,i){
+      el.style.transitionDelay = (i * 60) + 'ms';
+      io.observe(el);
+    });
+    document.querySelectorAll('.vct-reveal').forEach(function(el){
+      io.observe(el);
+    });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initStagger);
+  } else {
+    initStagger();
+  }
+
+  /* ── Live viewer counter ────────────────────────────────────────── */
+  var counters = document.querySelectorAll('.vct-viewer-count');
+  if(counters.length){
+    var base = Math.floor(Math.random()*8)+6; // 6-13
+    counters.forEach(function(el){ el.textContent = base; });
+    setInterval(function(){
+      var delta = Math.random() < 0.5 ? 1 : -1;
+      base = Math.max(4, Math.min(25, base + delta));
+      counters.forEach(function(el){ el.textContent = base; });
+    }, 4200);
+  }
+
+  /* ── Social proof toasts ────────────────────────────────────────── */
+  var toastWrap = document.getElementById('vct-sp-toasts');
+  if(!toastWrap) return;
+
+  var names = ['Joris','Sanne','Pieter','Lisa','Mark','Emma','Tom','Hanna','Lars','Kim'];
+  var products = toastWrap.dataset.products ? JSON.parse(toastWrap.dataset.products) : ['een product'];
+  var places = ['Amsterdam','Rotterdam','Utrecht','Eindhoven','Haarlem','Leiden','Groningen','Tilburg'];
+
+  function randomFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function showToast(){
+    var t = document.createElement('div');
+    t.className = 'vct-sp-toast';
+    t.innerHTML =
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>' +
+      '<span><strong>' + randomFrom(names) + '</strong> uit ' + randomFrom(places) +
+      ' kocht <strong>' + randomFrom(products) + '</strong></span>';
+    toastWrap.appendChild(t);
+    setTimeout(function(){ t.classList.add('vct-sp-toast--in'); }, 10);
+    setTimeout(function(){
+      t.classList.remove('vct-sp-toast--in');
+      setTimeout(function(){ t.remove(); }, 400);
+    }, 4500);
+  }
+
+  // First toast after 8s, then every 25-45s
+  setTimeout(function(){
+    showToast();
+    setInterval(showToast, 25000 + Math.random()*20000);
+  }, 8000);
+
+})();
+</script>

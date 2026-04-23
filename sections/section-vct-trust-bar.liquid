@@ -1,0 +1,121 @@
+{% comment %}
+  VCT Trust Bar — configurable 4-item trust strip
+  Dark navy background, white icons + text
+  Use in theme editor: Add Section → VCT Trust Bar
+{% endcomment %}
+
+{%- liquid
+  assign bg = section.settings.background_color
+  assign text_col = section.settings.text_color
+-%}
+
+<div class="vct-trust-bar vct-reveal" style="background:{{ bg }};color:{{ text_col }};">
+  <div class="vct-trust-bar__inner page-width">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'item' -%}
+        <div class="vct-trust-item" {{ block.shopify_attributes }}>
+          {%- if block.settings.icon != blank -%}
+            <span class="vct-trust-icon">{{ block.settings.icon }}</span>
+          {%- else -%}
+            <span class="vct-trust-icon">
+              {%- case block.settings.icon_preset -%}
+                {%- when 'truck' -%}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                {%- when 'returns' -%}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+                {%- when 'lock' -%}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                {%- when 'star' -%}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                {%- when 'phone' -%}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+                {%- else -%}
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              {%- endcase -%}
+            </span>
+          {%- endif -%}
+          <div class="vct-trust-text">
+            {%- if block.settings.title != blank -%}
+              <span class="vct-trust-title">{{ block.settings.title }}</span>
+            {%- endif -%}
+            {%- if block.settings.subtitle != blank -%}
+              <span class="vct-trust-sub">{{ block.settings.subtitle }}</span>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "VCT Trust Bar",
+  "tag": "section",
+  "class": "vct-section-trust-bar",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Achtergrondkleur",
+      "default": "#030a22"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Tekstkleur",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Trust Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_preset",
+          "label": "Icoon",
+          "options": [
+            {"value": "truck",    "label": "Bezorging"},
+            {"value": "returns",  "label": "Retour"},
+            {"value": "lock",     "label": "Veilig betalen"},
+            {"value": "star",     "label": "Beoordeling"},
+            {"value": "phone",    "label": "Service"},
+            {"value": "check",    "label": "Vinkje"}
+          ],
+          "default": "check"
+        },
+        {
+          "type": "html",
+          "id": "icon",
+          "label": "Eigen SVG icoon (optioneel, overschrijft preset)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titel",
+          "default": "Gratis verzending"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitel",
+          "default": "Vanaf €50 bestelling"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "VCT Trust Bar",
+      "blocks": [
+        {"type": "item", "settings": {"icon_preset": "truck",   "title": "Gratis verzending",  "subtitle": "Vanaf €50 bestelling"}},
+        {"type": "item", "settings": {"icon_preset": "returns", "title": "30 dagen retour",    "subtitle": "Zonder gedoe"}},
+        {"type": "item", "settings": {"icon_preset": "lock",    "title": "Veilig betalen",     "subtitle": "iDEAL, Klarna & meer"}},
+        {"type": "item", "settings": {"icon_preset": "star",    "title": "9.2 beoordeling",    "subtitle": "Op basis van 1.200+ reviews"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,698 @@
+{% comment %}
+  Snippet: snippets/henk-glossiobundle.liquid
+  Gebruik: {% render 'henk-glossiobundle' %}
+{% endcomment %}
+
+{% assign minimum_bundle_discount = 5 %}
+
+<div class="hgb-heading">
+  <span class="hgb-heading-title">Stel je eigen combideal samen</span>
+  <span class="hgb-heading-sub">Kies je favoriete Glossio producten en profiteer van bundelkorting</span>
+</div>
+
+<div class="hgb-wrapper" id="hgb-wrapper">
+
+  <div class="hgb-inner">
+    <div class="hgb-upsell-grid" id="hgb-upsell-grid"></div>
+    <div class="hgb-add-slot" id="hgb-add-slot" title="Voeg een product toe">
+      <span class="hgb-add-slot-icon">+</span>
+      <span class="hgb-add-slot-label">Toevoegen</span>
+    </div>
+  </div>
+
+  <div class="hgb-alt-panel" id="hgb-alt-panel" style="display:none;">
+    <div class="hgb-alt-header">
+      <span class="hgb-alt-label">Kies een alternatief</span>
+      <span class="hgb-alt-close" id="hgb-alt-close">✕</span>
+    </div>
+    <div class="hgb-alt-scroll-wrap">
+      <button class="hgb-alt-arrow hgb-alt-arrow--left" id="hgb-alt-prev" aria-label="Vorige">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="hgb-alt-scroll" id="hgb-alt-scroll"></div>
+      <button class="hgb-alt-arrow hgb-alt-arrow--right" id="hgb-alt-next" aria-label="Volgende">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="hgb-footer" id="hgb-footer" style="display:none;">
+    <div class="hgb-footer-left">
+      <div class="hgb-total-wrap">
+        <span class="hgb-total-new" id="hgb-total-new"></span>
+        <span class="hgb-total-old" id="hgb-total-old"></span>
+      </div>
+      <span class="hgb-stock">✓ Geselecteerde producten op voorraad</span>
+    </div>
+    <button class="hgb-btn" id="hgb-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57L23 6H6"/></svg>
+      Geselecteerde producten toevoegen
+    </button>
+  </div>
+
+</div>
+
+<div style="display:none" id="hgb-source-data">
+  {% assign glossio_collection = collections['glossio'] %}
+  {% for gp in glossio_collection.products limit: 24 %}
+    {% unless gp.title contains 'Combideal' %}
+      {% assign gp_variant = gp.selected_or_first_available_variant %}
+      {% assign gp_truly_available = false %}
+      {% if gp_variant.available %}
+        {% if gp_variant.inventory_management == blank %}
+          {% assign gp_truly_available = true %}
+        {% elsif gp_variant.inventory_policy == 'continue' %}
+          {% assign gp_truly_available = true %}
+        {% elsif gp_variant.inventory_quantity > 0 %}
+          {% assign gp_truly_available = true %}
+        {% endif %}
+      {% endif %}
+      {% if gp_truly_available %}
+        {% assign gp_base = gp.price %}
+        {% assign gp_compare = gp.compare_at_price %}
+        {% assign gp_pct = minimum_bundle_discount %}
+        {% assign gp_old = gp_base %}
+        {% if gp_compare > gp_base %}
+          {% assign gp_diff = gp_compare | minus: gp_base %}
+          {% assign gp_active = gp_diff | times: 100.0 | divided_by: gp_compare | ceil %}
+          {% if gp_active > minimum_bundle_discount %}
+            {% assign gp_pct = gp_active %}
+            {% assign gp_old = gp_compare %}
+          {% endif %}
+        {% endif %}
+        {% assign gp_factor = 100.0 | minus: gp_pct | divided_by: 100.0 %}
+        {% assign gp_price = gp_base | times: gp_factor | round %}
+        <div class="hgb-source-card"
+             data-variant-id="{{ gp_variant.id }}"
+             data-price="{{ gp_price }}"
+             data-old-price="{{ gp_old }}"
+             data-base-price="{{ gp_base }}"
+             data-pct="{{ gp_pct }}"
+             data-title="{{ gp.title | escape }}"
+             data-vendor="{{ gp.vendor | escape }}"
+             data-url="{{ gp.url }}"
+             data-img="{{ gp.featured_image | img_url: '400x' }}">
+        </div>
+      {% endif %}
+    {% endunless %}
+  {% endfor %}
+</div>
+
+<style>
+  .hgb-heading { margin: 0 0 12px 0; }
+  .hgb-heading-title { display: block; font-size: 20px; font-weight: 800; color: #030a22; line-height: 1.2; }
+  .hgb-heading-sub { display: block; font-size: 13px; color: #6b7280; margin-top: 4px; }
+
+  .hgb-wrapper { background: #f4f4f4; border: 1px solid #e8eaf0; border-radius: 10px; padding: 16px; margin: 0 0 16px 0; font-family: inherit; }
+  .hgb-inner { display: flex; gap: 12px; align-items: flex-start; }
+
+  /* Grid vult altijd de volledige breedte — kaarten verdelen de ruimte gelijkmatig */
+  .hgb-upsell-grid { display: flex; gap: 12px; flex: 1; min-width: 0; }
+
+  .hgb-card {
+    flex: 1 1 0;           /* alle kaarten even breed, groeien en krimpen gelijk */
+    min-width: 0;          /* voorkomt overflow bij veel kaarten */
+    background: #fff;
+    border: 1px solid #e8eaf0;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .hgb-card:hover { border-color: #FF7E00; }
+  .hgb-card.is-checked { border-color: #FF7E00; background: #fffaf5; }
+  .hgb-card:focus, .hgb-card *:focus { outline: none; box-shadow: none; }
+  .hgb-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; }
+  .hgb-custom-checkbox { display: block; cursor: pointer; flex-shrink: 0; }
+  .hgb-custom-checkbox input { display: none; }
+  .hgb-checkmark { width: 20px; height: 20px; border-radius: 5px; border: 2px solid #d1d5db; background: #fff; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+  .hgb-checkmark svg { color: #fff; opacity: 0; transition: opacity 0.15s ease; }
+  .hgb-custom-checkbox input:checked + .hgb-checkmark { background: #FF7E00; border-color: #FF7E00; }
+  .hgb-custom-checkbox input:checked + .hgb-checkmark svg { opacity: 1; }
+  .hgb-discount-badge { background: #FE0000; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 5px; white-space: nowrap; }
+  .hgb-discount-badge--abs { display: none; }
+  .hgb-card-img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 6px; display: block; padding: 4px; box-sizing: border-box; }
+  .hgb-card-vendor { font-size: 10px; color: #6b7280; font-weight: 500; }
+  .hgb-card-title { font-size: 11px; font-weight: 600; color: #030a22; line-height: 1.3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .hgb-card-prices { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .hgb-price-current { font-size: 12px; font-weight: 800; color: #030a22; }
+  .hgb-price-old { font-size: 10px; color: #9ca3af; text-decoration: line-through; }
+  .hgb-card-body-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .hgb-alt-btn { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: #FF7E00; font-weight: 500; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; margin-top: auto; line-height: 1.4; }
+  .hgb-alt-btn:hover { color: #e06e00; }
+  .hgb-info-btn { position: absolute; bottom: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: #fff3e8; border: none; display: flex; align-items: center; justify-content: center; color: #FF7E00; font-size: 11px; font-weight: 700; font-family: Georgia, serif; cursor: pointer; text-decoration: none; line-height: 1; transition: background 0.15s, color 0.15s; z-index: 2; }
+  .hgb-info-btn:hover { background: #FF7E00; border: none; color: #fff !important; }
+
+  /* Kaart verwijderen knop (×) — verschijnt rechtsboven op kaart */
+  .hgb-remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fee2e2;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .hgb-card:hover .hgb-remove-btn { opacity: 1; }
+  .hgb-remove-btn:hover { background: #ef4444; color: #fff; }
+
+  /* Extra slot toevoegen-knop */
+  .hgb-add-slot {
+    flex-shrink: 0;
+    width: 48px;
+    min-height: 80px;
+    background: #fff;
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    align-self: stretch;
+  }
+  .hgb-add-slot:hover { border-color: #FF7E00; background: #fffaf5; }
+  .hgb-add-slot-icon { font-size: 22px; color: #9ca3af; line-height: 1; transition: color 0.15s; }
+  .hgb-add-slot-label { font-size: 9px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; transition: color 0.15s; }
+  .hgb-add-slot:hover .hgb-add-slot-icon,
+  .hgb-add-slot:hover .hgb-add-slot-label { color: #FF7E00; }
+  /* Verberg toevoegen-knop wanneer alle producten al in slots zitten */
+  .hgb-add-slot.hgb-add-slot--hidden { display: none; }
+
+  .hgb-alt-panel { margin-top: 12px; border: 1px solid #e8eaf0; border-radius: 10px; overflow: hidden; background: #fff; }
+  .hgb-alt-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #e8eaf0; }
+  .hgb-alt-label { font-size: 12px; font-weight: 700; color: #030a22; }
+  .hgb-alt-close { font-size: 13px; color: #9ca3af; cursor: pointer; line-height: 1; padding: 2px 4px; }
+  .hgb-alt-close:hover { color: #030a22; }
+  .hgb-alt-scroll-wrap { display: flex; align-items: center; }
+  .hgb-alt-scroll { display: flex; gap: 8px; padding: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex: 1; scroll-behavior: smooth; }
+  .hgb-alt-scroll::-webkit-scrollbar { display: none; }
+  .hgb-alt-arrow { display: none !important; }
+  @media (min-width: 641px) {
+    .hgb-wrapper .hgb-alt-arrow { display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; width: 26px !important; height: 26px !important; min-width: 0 !important; min-height: 0 !important; max-width: 26px !important; max-height: 26px !important; background: #f9fafb !important; border: 1px solid #e8eaf0 !important; border-radius: 50% !important; cursor: pointer !important; color: #6b7280 !important; transition: border-color 0.2s, color 0.2s !important; margin: 0 4px !important; padding: 0 !important; box-shadow: none !important; font-size: 0 !important; line-height: 0 !important; }
+    .hgb-wrapper .hgb-alt-arrow:hover { border-color: #d1d5db !important; color: #030a22 !important; background: #f3f4f6 !important; }
+    .hgb-wrapper .hgb-alt-arrow:disabled { opacity: 0.3 !important; cursor: default !important; pointer-events: none !important; }
+    .hgb-wrapper .hgb-alt-arrow svg { width: 12px !important; height: 12px !important; flex-shrink: 0 !important; }
+  }
+  .hgb-alt-card { flex-shrink: 0; width: 110px; border: 1px solid #e8eaf0; border-radius: 10px; padding: 8px; cursor: pointer; position: relative; transition: border-color 0.2s; }
+  .hgb-alt-card:hover { border-color: #FF7E00; }
+  .hgb-alt-card--active { border-color: #FF7E00; background: #fffaf5; pointer-events: none; }
+  .hgb-alt-card img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 6px; display: block; }
+  .hgb-alt-discount-badge { position: absolute; top: 6px; right: 6px; background: #FE0000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 4px; border-radius: 4px; }
+  .hgb-alt-vendor { display: block; font-size: 9px; color: #6b7280; margin-top: 5px; }
+  .hgb-alt-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 10px; font-weight: 600; color: #030a22; line-height: 1.3; margin: 2px 0 4px; }
+  .hgb-alt-prices { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+
+  .hgb-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e8eaf0; flex-wrap: wrap; }
+  .hgb-footer-left { display: flex; flex-direction: column; gap: 3px; }
+  .hgb-total-wrap { display: flex; align-items: baseline; gap: 8px; }
+  .hgb-total-new { font-size: 22px; font-weight: 800; color: #030a22; }
+  .hgb-total-old { font-size: 15px; color: #9ca3af; text-decoration: line-through; }
+  .hgb-stock { font-size: 12px; color: #00a000; font-weight: 500; }
+  .hgb-btn { background: #FF7E00 !important; color: #fff !important; border: none !important; border-radius: 100px !important; padding: 12px 24px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; transition: background 0.2s !important; white-space: nowrap !important; width: auto !important; min-width: 0 !important; height: auto !important; box-shadow: none !important; line-height: normal !important; }
+  .hgb-btn:hover { background: #e06e00 !important; }
+  .hgb-btn:disabled { background: #ccc !important; cursor: default !important; }
+
+  /* Korting-info balk onder de kaarten */
+  .hgb-discount-info {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #6b7280;
+    text-align: center;
+  }
+  .hgb-discount-info strong { color: #FF7E00; }
+
+  @media (max-width: 640px) {
+    .hgb-heading-title { font-size: 17px; }
+    .hgb-wrapper { padding: 12px; overflow: hidden; }
+    .hgb-inner { flex-direction: column; gap: 8px; }
+    .hgb-upsell-grid { flex-direction: column; width: 100%; gap: 8px; }
+    .hgb-card { flex-direction: row; align-items: center; gap: 8px; max-width: 100%; min-width: 0; padding: 10px; box-sizing: border-box; }
+    .hgb-card-top { flex-direction: column; align-items: center; flex-shrink: 0; gap: 0; }
+    .hgb-card-top .hgb-discount-badge { display: none; }
+    .hgb-card-img { width: 64px; height: 64px; flex-shrink: 0; aspect-ratio: unset; }
+    .hgb-card-title { padding-right: 40px; }
+    .hgb-discount-badge--abs { display: inline-block; position: absolute; top: 10px; right: 10px; }
+    .hgb-info-btn { bottom: 8px; right: 8px; top: auto; }
+    .hgb-footer { flex-direction: column; align-items: flex-start; }
+    .hgb-btn { width: 100% !important; justify-content: center !important; }
+    .hgb-add-slot { flex-direction: row; width: 100%; min-height: 44px; gap: 6px; }
+    .hgb-add-slot-icon { font-size: 18px; }
+    .hgb-add-slot-label { font-size: 11px; }
+    .hgb-remove-btn { opacity: 1; }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const wrapper   = document.getElementById('hgb-wrapper');
+  if (!wrapper) return;
+
+  const grid      = document.getElementById('hgb-upsell-grid');
+  const footer    = document.getElementById('hgb-footer');
+  const btn       = document.getElementById('hgb-btn');
+  const totalNew  = document.getElementById('hgb-total-new');
+  const totalOld  = document.getElementById('hgb-total-old');
+  const altPanel  = document.getElementById('hgb-alt-panel');
+  const altScroll = document.getElementById('hgb-alt-scroll');
+  const altClose  = document.getElementById('hgb-alt-close');
+  const altPrev   = document.getElementById('hgb-alt-prev');
+  const altNext   = document.getElementById('hgb-alt-next');
+  const addSlot   = document.getElementById('hgb-add-slot');
+
+  let allCards = [];
+  // 5 slots standaard voor Glossio bundel
+  let slotData = [-1, -1, -1, -1, -1];
+
+  // Minimale korting is 5%, maar ALLEEN bij 4 of meer geselecteerde producten.
+  // Bij minder dan 4 geselecteerde producten: geen bundel-5%-korting (wordt 0%,
+  // tenzij het product al een hogere eigen korting heeft).
+  const MIN_DISCOUNT_PCT = 5;
+  const MIN_PRODUCTS_FOR_DISCOUNT = 4;
+
+  function money(cents) {
+    const n = parseInt(cents);
+    if (!n || isNaN(n)) return '';
+    return (n / 100).toFixed(2).replace('.', ',').replace(',00', ',-');
+  }
+
+  function updateAltArrows() {
+    if (!altPrev || !altNext) return;
+    altPrev.disabled = altScroll.scrollLeft <= 0;
+    altNext.disabled = altScroll.scrollLeft + altScroll.clientWidth >= altScroll.scrollWidth - 1;
+  }
+
+  if (altPrev) altPrev.addEventListener('click', () => altScroll.scrollBy({ left: -240, behavior: 'smooth' }));
+  if (altNext) altNext.addEventListener('click', () => altScroll.scrollBy({ left: 240, behavior: 'smooth' }));
+  altScroll.addEventListener('scroll', updateAltArrows);
+
+  /**
+   * Bereken de effectieve prijs van een kaart gegeven het aantal
+   * momenteel geselecteerde producten.
+   *
+   * Regels:
+   * - Een product kan een eigen (hogere) korting hebben (data-pct).
+   * - De bundel-5%-korting geldt alleen bij >= 4 geselecteerde producten.
+   * - Als de eigen korting hoger is dan 5%, geldt die altijd.
+   */
+  function effectivePrice(d, checkedCount) {
+    const basePrice = parseInt(d.basePrice);  // originele winkelprijs (zonder enige korting)
+    const ownPct    = parseInt(d.ownPct);     // eigen korting % (kan 0 zijn als geen compare_at)
+
+    // Bepaal welk kortings-% van toepassing is
+    let pct = ownPct;
+    if (checkedCount >= MIN_PRODUCTS_FOR_DISCOUNT) {
+      pct = Math.max(ownPct, MIN_DISCOUNT_PCT);
+    }
+
+    const price = Math.round(basePrice * (100 - pct) / 100);
+    return { price, pct };
+  }
+
+  function getCheckedCount() {
+    return grid.querySelectorAll('.hgb-card .hgb-checkbox:checked').length;
+  }
+
+  /** Herbereken en pas de prijs + badge aan van alle kaarten na wijziging */
+  function refreshCardPrices() {
+    const count = getCheckedCount();
+    grid.querySelectorAll('.hgb-card').forEach(card => {
+      const idx = parseInt(card.dataset.cardIndex);
+      if (isNaN(idx) || !allCards[idx]) return;
+      const d = allCards[idx];
+      const { price, pct } = effectivePrice(d, count);
+      card.dataset.price = price;
+      const priceEl = card.querySelector('.hgb-price-current');
+      if (priceEl) priceEl.textContent = money(price);
+      const badges = card.querySelectorAll('.hgb-discount-badge');
+      badges.forEach(b => b.textContent = '-' + pct + '%');
+    });
+  }
+
+  function buildCard(d, slotIndex) {
+    // Gebruik een tijdelijke telling: huidige aantal checked kaarten
+    const checkedCount = getCheckedCount();
+    const { price, pct } = effectivePrice(d, checkedCount);
+
+    const card = document.createElement('div');
+    card.className = 'hgb-card is-checked';
+    card.dataset.variantId  = d.variantId;
+    card.dataset.price      = price;
+    card.dataset.oldPrice   = d.oldPrice;
+    card.dataset.cardIndex  = allCards.indexOf(d);
+
+    card.innerHTML = `
+      <button class="hgb-remove-btn" title="Verwijder dit product" aria-label="Verwijder">×</button>
+      <div class="hgb-card-top">
+        <label class="hgb-custom-checkbox" onclick="event.stopPropagation()">
+          <input type="checkbox" class="hgb-checkbox" checked>
+          <span class="hgb-checkmark">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+        </label>
+        <span class="hgb-discount-badge">-${pct}%</span>
+      </div>
+      <img class="hgb-card-img" src="${d.img}" alt="${d.title}">
+      <div class="hgb-card-body-wrap">
+        <span class="hgb-card-vendor">${d.vendor}</span>
+        <span class="hgb-card-title">${d.title}</span>
+        <div class="hgb-card-prices">
+          <span class="hgb-price-current">${money(price)}</span>
+          <span class="hgb-price-old">${money(d.oldPrice)}</span>
+        </div>
+        <span class="hgb-alt-btn">
+          Kies alternatief
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+      <span class="hgb-discount-badge hgb-discount-badge--abs">-${pct}%</span>
+      <a class="hgb-info-btn" href="${d.url}" target="_blank" title="Bekijk productpagina" aria-label="Meer info over ${d.title}">i</a>`;
+
+    card.querySelector('.hgb-remove-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      removeSlot(slotIndex);
+    });
+    card.querySelector('.hgb-alt-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      showAltPanel(slotIndex);
+    });
+    card.querySelector('.hgb-info-btn').addEventListener('click', e => e.stopPropagation());
+    card.querySelector('.hgb-checkbox').addEventListener('change', function () {
+      card.classList.toggle('is-checked', this.checked);
+      refreshCardPrices();
+      updateTotals();
+      updateDiscountInfo();
+    });
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('.hgb-alt-btn')) return;
+      if (e.target.closest('.hgb-info-btn')) return;
+      if (e.target.closest('.hgb-remove-btn')) return;
+      const cb = this.querySelector('.hgb-checkbox');
+      cb.checked = !cb.checked;
+      this.classList.toggle('is-checked', cb.checked);
+      refreshCardPrices();
+      updateTotals();
+      updateDiscountInfo();
+    });
+    return card;
+  }
+
+  function removeSlot(slotIndex) {
+    const cards = grid.querySelectorAll('.hgb-card');
+    if (cards[slotIndex]) cards[slotIndex].remove();
+    slotData.splice(slotIndex, 1);
+    // Herindex slotIndex op resterende kaarten
+    grid.querySelectorAll('.hgb-card').forEach((card, i) => {
+      // Herbind events via dataset; slotIndex wordt bijgehouden via positie
+    });
+    rebuildSlotListeners();
+    updateAddSlotVisibility();
+    refreshCardPrices();
+    updateTotals();
+    updateDiscountInfo();
+  }
+
+  /** Herbind alle klik-events op kaarten zodat slotIndex altijd de huidige positie is */
+  function rebuildSlotListeners() {
+    // Events zijn al gebonden op de DOM-nodes zelf; slotIndex wordt dynamisch
+    // bepaald via positie in grid bij showAltPanel / removeSlot.
+    // Vervang de listener-referenties voor alt-btn en remove-btn.
+    grid.querySelectorAll('.hgb-card').forEach((card, i) => {
+      // Vervang remove-btn listener
+      const rb = card.querySelector('.hgb-remove-btn');
+      if (rb) {
+        const newRb = rb.cloneNode(true);
+        rb.replaceWith(newRb);
+        newRb.addEventListener('click', e => { e.stopPropagation(); removeSlot(i); });
+      }
+      // Vervang alt-btn listener
+      const ab = card.querySelector('.hgb-alt-btn');
+      if (ab) {
+        const newAb = ab.cloneNode(true);
+        ab.replaceWith(newAb);
+        newAb.addEventListener('click', e => { e.stopPropagation(); showAltPanel(i); });
+      }
+    });
+  }
+
+  function showAltPanel(slotIndex) {
+    altScroll.innerHTML = '';
+    altPanel.dataset.slot = slotIndex;
+    allCards.forEach((d, i) => {
+      if (slotData.some((idx, s) => idx === i && s !== slotIndex)) return;
+      const isCurrent = slotData[slotIndex] === i;
+      const { price, pct } = effectivePrice(d, getCheckedCount());
+      const card = document.createElement('div');
+      card.className = 'hgb-alt-card' + (isCurrent ? ' hgb-alt-card--active' : '');
+      card.innerHTML = `
+        <img src="${d.img}" alt="${d.title}">
+        <div class="hgb-alt-discount-badge">-${pct}%</div>
+        <span class="hgb-alt-vendor">${d.vendor}</span>
+        <span class="hgb-alt-title">${d.title}</span>
+        <div class="hgb-alt-prices">
+          <span class="hgb-price-current">${money(price)}</span>
+          <span class="hgb-price-old">${money(d.oldPrice)}</span>
+        </div>`;
+      if (!isCurrent) card.addEventListener('click', () => swapSlot(slotIndex, i));
+      altScroll.appendChild(card);
+    });
+    altPanel.style.display = 'block';
+    setTimeout(updateAltArrows, 50);
+  }
+
+  function swapSlot(slotIndex, newCardIndex) {
+    const cards = grid.querySelectorAll('.hgb-card');
+    const wasChecked = cards[slotIndex]?.querySelector('.hgb-checkbox')?.checked ?? true;
+    slotData[slotIndex] = newCardIndex;
+    const newCard = buildCard(allCards[newCardIndex], slotIndex);
+    if (!wasChecked) { newCard.classList.remove('is-checked'); newCard.querySelector('.hgb-checkbox').checked = false; }
+    if (cards[slotIndex]) cards[slotIndex].replaceWith(newCard);
+    rebuildSlotListeners();
+    altPanel.style.display = 'none';
+    refreshCardPrices();
+    updateTotals();
+    updateDiscountInfo();
+  }
+
+  altClose.addEventListener('click', () => altPanel.style.display = 'none');
+
+  /** Voeg een nieuw slot toe vanuit de + knop — opent het alt-panel als "kies product" */
+  function addNewSlot() {
+    // Zoek een kaart die nog niet in een slot zit
+    const usedIndices = new Set(slotData.filter(i => i >= 0));
+    const freeIndex = allCards.findIndex((_, i) => !usedIndices.has(i));
+    if (freeIndex === -1) return; // alle producten zijn al in een slot
+
+    const newSlotIndex = slotData.length;
+    slotData.push(freeIndex);
+    const newCard = buildCard(allCards[freeIndex], newSlotIndex);
+    grid.appendChild(newCard);
+    rebuildSlotListeners();
+    updateAddSlotVisibility();
+    refreshCardPrices();
+    updateTotals();
+    updateDiscountInfo();
+  }
+
+  addSlot.addEventListener('click', addNewSlot);
+
+  function updateAddSlotVisibility() {
+    const usedIndices = new Set(slotData.filter(i => i >= 0));
+    const hasMore = allCards.some((_, i) => !usedIndices.has(i));
+    addSlot.classList.toggle('hgb-add-slot--hidden', !hasMore);
+  }
+
+  // Informatietekst over kortingsdrempel
+  let discountInfoEl = null;
+  function updateDiscountInfo() {
+    if (!discountInfoEl) {
+      discountInfoEl = document.createElement('div');
+      discountInfoEl.className = 'hgb-discount-info';
+      wrapper.insertBefore(discountInfoEl, footer);
+    }
+    const count = getCheckedCount();
+    if (count < MIN_PRODUCTS_FOR_DISCOUNT) {
+      const needed = MIN_PRODUCTS_FOR_DISCOUNT - count;
+      discountInfoEl.innerHTML = `Selecteer nog <strong>${needed} product${needed > 1 ? 'en' : ''}</strong> om <strong>${MIN_DISCOUNT_PCT}% bundelkorting</strong> te activeren.`;
+      discountInfoEl.style.display = 'block';
+    } else {
+      discountInfoEl.style.display = 'none';
+    }
+  }
+
+  function updateTotals() {
+    let newTotal = 0;
+    let oldTotal = 0;
+    let any = false;
+
+    grid.querySelectorAll('.hgb-card').forEach(card => {
+      if (card.querySelector('.hgb-checkbox')?.checked) {
+        newTotal += parseInt(card.dataset.price) || 0;
+        oldTotal += parseInt(card.dataset.oldPrice) || 0;
+        any = true;
+      }
+    });
+
+    footer.style.display = any ? 'flex' : 'none';
+    if (any) {
+      totalNew.textContent = money(newTotal);
+      totalOld.textContent = money(oldTotal);
+    }
+  }
+
+  function parseSourceCards(container) {
+    return Array.from(container.querySelectorAll('.hgb-source-card')).map(src => ({
+      variantId : src.dataset.variantId,
+      price     : src.dataset.price,      // reeds berekende bundelprijs (Liquid-side, niet meer gebruikt voor weergave)
+      oldPrice  : src.dataset.oldPrice,
+      basePrice : src.dataset.basePrice,  // originele winkelprijs, voor client-side kortingsberekening
+      ownPct    : parseInt(src.dataset.pct) || 0,  // eigen kortings-% (> MIN als compare_at hoger is)
+      pct       : src.dataset.pct,
+      title     : src.dataset.title,
+      vendor    : src.dataset.vendor,
+      url       : src.dataset.url,
+      img       : src.dataset.img
+    }));
+  }
+
+  // Lees producten direct uit de Liquid-gegenereerde source data
+  const sourceContainer = document.getElementById('hgb-source-data');
+  if (sourceContainer) {
+    const seen = new Set();
+    for (const d of parseSourceCards(sourceContainer)) {
+      if (d.variantId && !seen.has(d.variantId)) {
+        seen.add(d.variantId);
+        allCards.push(d);
+      }
+    }
+  }
+
+  if (allCards.length === 0) {
+    wrapper.style.display = 'none';
+    document.querySelector('.hgb-heading') && (document.querySelector('.hgb-heading').style.display = 'none');
+    return;
+  }
+
+  const maxSlots = 5;
+  const count = Math.min(maxSlots, allCards.length);
+  grid.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    slotData[i] = i;
+    grid.appendChild(buildCard(allCards[i], i));
+  }
+
+  rebuildSlotListeners();
+  updateAddSlotVisibility();
+  refreshCardPrices();
+  updateTotals();
+  updateDiscountInfo();
+
+  function updateCartCount(cart) {
+    document.querySelectorAll('[data-cart-count],[data-cart-item-count],.cart-count,.cart__count,.header__cart-count,.cart-count-bubble').forEach(el => {
+      el.textContent = cart.item_count;
+      el.setAttribute('data-count', cart.item_count);
+      if (cart.item_count > 0) el.removeAttribute('hidden');
+    });
+  }
+
+  function refreshDrawerContent() {
+    const drawerEl = document.querySelector('cart-drawer, #CartDrawer, .cart-drawer');
+    if (!drawerEl) return Promise.resolve();
+    const sectionId = drawerEl.dataset.sectionId || drawerEl.id || 'cart-drawer';
+    return fetch(`/?sections=${sectionId}`).then(r => r.json()).then(data => {
+      const html = data[sectionId] || data[Object.keys(data)[0]];
+      if (!html) return;
+      const parser = new DOMParser();
+      const newDoc = parser.parseFromString(html, 'text/html');
+      for (const sel of ['.cart-drawer__item-list','.drawer__cart-items-wrapper','#cart-drawer-items','.cart-items','[data-cart-items]','.js-cart-items']) {
+        const src = newDoc.querySelector(sel), tgt = document.querySelector(sel);
+        if (src && tgt) { tgt.innerHTML = src.innerHTML; break; }
+      }
+      for (const sel of ['.cart-drawer__footer','.drawer__footer','#cart-drawer-footer','[data-cart-total]','.cart-subtotal']) {
+        const src = newDoc.querySelector(sel), tgt = document.querySelector(sel);
+        if (src && tgt) { tgt.innerHTML = src.innerHTML; break; }
+      }
+    }).catch(() => {});
+  }
+
+  function openCartDrawer() {
+    const drawerEl = document.querySelector('cart-drawer');
+    if (drawerEl) {
+      if (typeof drawerEl.open === 'function') { drawerEl.open(); return; }
+      drawerEl.setAttribute('open', ''); drawerEl.removeAttribute('aria-hidden'); return;
+    }
+    for (const sel of ['[data-cart-toggle]','[data-drawer-trigger="cart"]','.js-drawer-open-cart','#cart-icon-bubble','[aria-label*="winkelwagen" i]','.cart-toggle','.cart__toggle','.header__cart','.site-header__cart']) {
+      const el = document.querySelector(sel);
+      if (el) { el.click(); return; }
+    }
+    for (const [name, target] of [['CartDrawer:open', document.body],['cart:open', document],['cart:toggle', document],['theme:cart:open', document],['open-cart', document],['cartOpen', document]]) {
+      target.dispatchEvent(new CustomEvent(name, { bubbles: true }));
+    }
+  }
+
+  btn.addEventListener('click', function () {
+    const items = [];
+
+    grid.querySelectorAll('.hgb-card.is-checked').forEach(card => {
+      const id = parseInt(card.dataset.variantId);
+      if (id && !isNaN(id)) {
+        items.push({
+          id,
+          quantity: 1,
+          properties: { _bundle: 'true' }
+        });
+      }
+    });
+
+    if (!items.length) return;
+
+    const originalHTML = btn.innerHTML;
+    btn.textContent = 'Toevoegen...';
+    btn.disabled = true;
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      body: JSON.stringify({ items, attributes: { 'henk-glossiobundle': 'true' } })
+    })
+    .then(r => {
+      if (!r.ok) return r.json().then(e => { throw new Error(e.message || r.status); });
+      return r.json();
+    })
+    .then(() => Promise.all([fetch('/cart.js').then(r => r.json()), refreshDrawerContent()]))
+    .then(([cart]) => {
+      updateCartCount(cart);
+      document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true, detail: { cart } }));
+      window.dispatchEvent(new CustomEvent('cart-update', { bubbles: true, detail: { cart } }));
+      document.dispatchEvent(new CustomEvent('theme:cart:update', { bubbles: true, detail: { cart } }));
+      openCartDrawer();
+      btn.innerHTML = '✓ Toegevoegd!';
+      setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 2000);
+    })
+    .catch(err => {
+      console.error('Cart fout:', err);
+      btn.textContent = 'Fout: ' + (err.message || 'probeer opnieuw');
+      setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 3000);
+    });
+  });
+});
+</script>

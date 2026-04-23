@@ -1,0 +1,697 @@
+{% comment %}
+  Reviews Slider — FeedbackCompany v3
+  sections/reviews-slider.liquid
+{% endcomment %}
+
+<div class="fcrs-wrap" id="fcrs-{{ section.id }}">
+  <div class="fcrs-inner">
+
+    <div class="fcrs-header">
+      <div class="fcrs-header__left">
+        <span class="fcrs-eyebrow">{{ section.settings.eyebrow | default: 'Wat onze klanten zeggen' }}</span>
+        <h2 class="fcrs-title">{{ section.settings.title | default: 'Klantbeoordelingen' }}</h2>
+      </div>
+      <a href="https://www.feedbackcompany.com/nl-nl/reviews/vctparts"
+         target="_blank" rel="noopener"
+         class="fcrs-badge"
+         aria-label="Bekijk alle reviews op FeedbackCompany">
+        <img class="fcrs-badge__logo"
+             src="https://cdn.shopify.com/s/files/1/0871/5904/6480/files/feedback-company_logo_84934bbb-0b93-4a51-bcf2-3923a4ab76f4.png?v=1740221471"
+             alt="FeedbackCompany" width="120" height="auto" loading="lazy">
+        <div class="fcrs-badge__score">
+          <span class="fcrs-badge__num">{{ section.settings.overall_score | default: '8.9' }}</span>
+          <span class="fcrs-badge__denom">/10</span>
+        </div>
+        <div class="fcrs-badge__stars" aria-hidden="true">
+          <svg viewBox="0 0 20 20" class="fcrs-star fcrs-star--on"><use href="#fcrs-star-icon"/></svg>
+          <svg viewBox="0 0 20 20" class="fcrs-star fcrs-star--on"><use href="#fcrs-star-icon"/></svg>
+          <svg viewBox="0 0 20 20" class="fcrs-star fcrs-star--on"><use href="#fcrs-star-icon"/></svg>
+          <svg viewBox="0 0 20 20" class="fcrs-star fcrs-star--on"><use href="#fcrs-star-icon"/></svg>
+          <svg viewBox="0 0 20 20" class="fcrs-star fcrs-star--half"><use href="#fcrs-star-icon"/></svg>
+        </div>
+        <p class="fcrs-badge__meta">{{ section.settings.review_count | default: '803' }} beoordelingen</p>
+        <p class="fcrs-badge__recommend">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="6" fill="#00A651"/><path d="M3.5 6.2L5.2 7.9L8.5 4.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {{ section.settings.recommend_pct | default: '92' }}% beveelt ons aan
+        </p>
+      </a>
+    </div>
+
+    <div class="fcrs-slider">
+      <button class="fcrs-btn fcrs-btn--prev" id="fcrs-prev-{{ section.id }}" aria-label="Vorige" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="fcrs-viewport" id="fcrs-vp-{{ section.id }}">
+        <div class="fcrs-track" id="fcrs-track-{{ section.id }}">
+          {% for block in section.blocks %}
+            {% if block.type == 'review' %}
+              {% assign sc = block.settings.score | default: 10 | times: 1 %}
+              {% assign filled = sc | divided_by: 2.0 | round %}
+              <article class="fcrs-card" {{ block.shopify_attributes }}>
+                <div class="fcrs-card__head">
+                  <div class="fcrs-card__avatar">{{ block.settings.author | slice: 0 | upcase }}</div>
+                  <div class="fcrs-card__meta">
+                    <strong class="fcrs-card__name">{{ block.settings.author | default: 'Klant' }}</strong>
+                    <span class="fcrs-card__date">{{ block.settings.date | default: '01-01-2026' }}</span>
+                  </div>
+                  {% if block.settings.recommended %}
+                    <span class="fcrs-card__rec">
+                      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="5.5" r="5.5" fill="#00A651"/><path d="M3 5.6L4.8 7.4L8 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      Aanrader
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="fcrs-card__score-row">
+                  <div class="fcrs-card__stars">
+                    {% for i in (1..5) %}
+                      {% if i <= filled %}
+                        <svg viewBox="0 0 20 20" class="fcrs-star fcrs-star--on"><use href="#fcrs-star-icon"/></svg>
+                      {% else %}
+                        <svg viewBox="0 0 20 20" class="fcrs-star fcrs-star--off"><use href="#fcrs-star-icon"/></svg>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <span class="fcrs-card__score-num">{{ sc }}/10</span>
+                </div>
+                <div class="fcrs-card__body">
+                  {% if block.settings.review_title != blank %}
+                    <p class="fcrs-card__title">&ldquo;{{ block.settings.review_title }}&rdquo;</p>
+                  {% endif %}
+                  <p class="fcrs-card__text">{{ block.settings.review_text }}</p>
+                </div>
+                <div class="fcrs-card__foot">
+                  <img src="https://cdn.shopify.com/s/files/1/0871/5904/6480/files/feedback-company_logo_84934bbb-0b93-4a51-bcf2-3923a4ab76f4.png?v=1740221471"
+                       alt="FeedbackCompany" class="fcrs-card__fc-logo" width="88" loading="lazy">
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <button class="fcrs-btn fcrs-btn--next" id="fcrs-next-{{ section.id }}" aria-label="Volgende" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 4L12 9L7 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <div class="fcrs-dots" id="fcrs-dots-{{ section.id }}"></div>
+
+    <div class="fcrs-footer">
+      <a href="https://www.feedbackcompany.com/nl-nl/reviews/vctparts"
+         target="_blank" rel="noopener" class="fcrs-footer__link">
+        Alle {{ section.settings.review_count | default: '803' }} reviews op FeedbackCompany
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7H11.5M8 3.5L11.5 7L8 10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="fcrs-star-icon" viewBox="0 0 20 20">
+    <path d="M10 1.5l2.47 5.01 5.53.8-4 3.9.94 5.49L10 14.27l-4.94 2.43.94-5.49-4-3.9 5.53-.8z"/>
+  </symbol>
+</svg>
+<svg width="0" height="0" style="position:absolute;overflow:hidden">
+  <defs>
+    <linearGradient id="fcrs-hg-{{ section.id }}" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="50%" stop-color="#FF9800"/>
+      <stop offset="50%" stop-color="#D8D8D8"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<style>
+/* ── Harde isolatie: alles binnen de wrapper overschrijven ── */
+#fcrs-{{ section.id }},
+#fcrs-{{ section.id }} * {
+  box-sizing: border-box !important;
+}
+
+/* Achtergrond: gebruik !important én een inline-stijl fallback via attr */
+#fcrs-{{ section.id }}.fcrs-wrap {
+  background-color: #F0F0F0 !important;
+  background-image: none !important;
+  padding: 52px 0 44px !important;
+  margin: 0 !important;
+  color: #111111 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-inner {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+}
+
+/* ── HEADER ── */
+#fcrs-{{ section.id }} .fcrs-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  margin-bottom: 28px !important;
+  flex-wrap: wrap !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-eyebrow {
+  display: block !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+  color: #F57C00 !important;
+  margin: 0 0 6px !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-title {
+  font-size: clamp(20px, 2.5vw, 28px) !important;
+  font-weight: 800 !important;
+  color: #111111 !important;
+  margin: 0 !important;
+  line-height: 1.15 !important;
+  background: none !important;
+  padding: 0 !important;
+}
+
+/* ── FC BADGE ── */
+#fcrs-{{ section.id }} .fcrs-badge {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 2px solid #E0E0E0 !important;
+  border-radius: 14px !important;
+  padding: 16px 20px !important;
+  text-decoration: none !important;
+  min-width: 180px !important;
+  cursor: pointer !important;
+  transition: border-color .2s, box-shadow .2s !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge:hover {
+  border-color: #00A0E3 !important;
+  box-shadow: 0 4px 16px rgba(0,160,227,.15) !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__logo {
+  width: 120px !important;
+  height: auto !important;
+  display: block !important;
+  margin-bottom: 8px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__score {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 1px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__num {
+  font-size: 38px !important;
+  font-weight: 900 !important;
+  color: #111111 !important;
+  line-height: 1 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__denom {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #666 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__stars {
+  display: flex !important;
+  gap: 2px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__stars .fcrs-star {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__meta {
+  font-size: 12px !important;
+  color: #666 !important;
+  margin: 0 !important;
+  text-align: center !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-badge__recommend {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #00A651 !important;
+  margin: 0 !important;
+  background: none !important;
+}
+
+/* ── STERREN ── */
+#fcrs-{{ section.id }} .fcrs-star {
+  width: 16px !important;
+  height: 16px !important;
+  fill: #D8D8D8 !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+}
+#fcrs-{{ section.id }} .fcrs-star--on  { fill: #FF9800 !important; }
+#fcrs-{{ section.id }} .fcrs-star--off { fill: #D8D8D8 !important; }
+#fcrs-{{ section.id }} .fcrs-star--half { fill: url(#fcrs-hg-{{ section.id }}) !important; }
+
+/* ── SLIDER LAYOUT ── */
+#fcrs-{{ section.id }} .fcrs-slider {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-viewport {
+  flex: 1 !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-track {
+  display: flex !important;
+  gap: 16px !important;
+  transition: transform .4s cubic-bezier(.25,.46,.45,.94) !important;
+  will-change: transform !important;
+  align-items: stretch !important;
+}
+
+/* ── PIJLKNOPPEN — volledig geïsoleerd ── */
+#fcrs-{{ section.id }} button.fcrs-btn {
+  all: unset !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 2px solid #DDDDDD !important;
+  color: #333333 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,.1) !important;
+  transition: all .18s !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+#fcrs-{{ section.id }} button.fcrs-btn--prev { margin-right: 12px !important; }
+#fcrs-{{ section.id }} button.fcrs-btn--next { margin-left: 12px !important; }
+
+#fcrs-{{ section.id }} button.fcrs-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  pointer-events: none !important;
+  fill: none !important;
+}
+
+#fcrs-{{ section.id }} button.fcrs-btn:hover {
+  background-color: #F57C00 !important;
+  border-color: #F57C00 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(245,124,0,.3) !important;
+}
+
+#fcrs-{{ section.id }} button.fcrs-btn:disabled {
+  opacity: .25 !important;
+  pointer-events: none !important;
+}
+
+/* ── CARDS ── */
+#fcrs-{{ section.id }} .fcrs-card {
+  flex: 0 0 300px !important;
+  width: 300px !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 1.5px solid #E8E8E8 !important;
+  border-radius: 14px !important;
+  padding: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: box-shadow .2s !important;
+  color: #111111 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,.1) !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__avatar {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  background-color: #00A0E3 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__meta {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__name {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #111111 !important;
+  line-height: 1.2 !important;
+  display: block !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__date {
+  font-size: 11px !important;
+  color: #AAAAAA !important;
+  display: block !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__rec {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #00A651 !important;
+  background-color: #E8F5E9 !important;
+  background-image: none !important;
+  padding: 3px 8px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__score-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 10px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__stars {
+  display: flex !important;
+  gap: 2px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__score-num {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #555555 !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__body {
+  flex: 1 !important;
+  margin-bottom: 12px !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__title {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #111111 !important;
+  margin: 0 0 5px !important;
+  line-height: 1.35 !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__text {
+  font-size: 13px !important;
+  color: #555555 !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 5 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__foot {
+  border-top: 1px solid #F0F0F0 !important;
+  padding-top: 10px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card__fc-logo {
+  width: 86px !important;
+  height: auto !important;
+  opacity: .6 !important;
+  transition: opacity .2s !important;
+  display: block !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-card:hover .fcrs-card__fc-logo {
+  opacity: 1 !important;
+}
+
+/* ── DOTS ── */
+#fcrs-{{ section.id }} .fcrs-dots {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  margin-top: 20px !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-dot {
+  all: unset !important;
+  display: block !important;
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  background-color: #CCCCCC !important;
+  cursor: pointer !important;
+  transition: all .2s !important;
+}
+
+#fcrs-{{ section.id }} .fcrs-dot.is-active {
+  background-color: #F57C00 !important;
+  width: 22px !important;
+  border-radius: 4px !important;
+}
+
+/* ── FOOTER ── */
+#fcrs-{{ section.id }} .fcrs-footer {
+  text-align: center !important;
+  margin-top: 24px !important;
+  background: none !important;
+}
+
+#fcrs-{{ section.id }} a.fcrs-footer__link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #00A0E3 !important;
+  text-decoration: none !important;
+  border: 2px solid #00A0E3 !important;
+  padding: 9px 20px !important;
+  border-radius: 7px !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  transition: background-color .18s, color .18s !important;
+}
+
+#fcrs-{{ section.id }} a.fcrs-footer__link:hover {
+  background-color: #00A0E3 !important;
+  color: #ffffff !important;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  #fcrs-{{ section.id }} .fcrs-card {
+    flex: 0 0 260px !important;
+    width: 260px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  #fcrs-{{ section.id }}.fcrs-wrap {
+    padding: 32px 0 28px !important;
+  }
+  #fcrs-{{ section.id }} .fcrs-inner {
+    padding: 0 16px !important;
+  }
+  #fcrs-{{ section.id }} .fcrs-header {
+    flex-direction: column !important;
+    gap: 14px !important;
+    margin-bottom: 20px !important;
+  }
+  #fcrs-{{ section.id }} .fcrs-badge {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: unset !important;
+    padding: 12px 14px !important;
+    gap: 8px !important;
+  }
+  #fcrs-{{ section.id }} .fcrs-badge__logo {
+    width: 88px !important;
+    margin-bottom: 0 !important;
+  }
+  #fcrs-{{ section.id }} .fcrs-badge__num { font-size: 28px !important; }
+  #fcrs-{{ section.id }} .fcrs-badge__stars .fcrs-star {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  #fcrs-{{ section.id }} button.fcrs-btn {
+    width: 34px !important;
+    height: 34px !important;
+  }
+  #fcrs-{{ section.id }} button.fcrs-btn--prev { margin-right: 8px !important; }
+  #fcrs-{{ section.id }} button.fcrs-btn--next { margin-left: 8px !important; }
+  #fcrs-{{ section.id }} .fcrs-card {
+    flex: 0 0 calc(100vw - 100px) !important;
+    width: calc(100vw - 100px) !important;
+  }
+}
+</style>
+
+<script>
+(function () {
+  var id      = '{{ section.id }}';
+  var wrap    = document.getElementById('fcrs-' + id);
+  if (!wrap) return;
+  var track   = document.getElementById('fcrs-track-' + id);
+  var vp      = document.getElementById('fcrs-vp-' + id);
+  var dotsEl  = document.getElementById('fcrs-dots-' + id);
+  var btnPrev = document.getElementById('fcrs-prev-' + id);
+  var btnNext = document.getElementById('fcrs-next-' + id);
+  var cards   = Array.from(track.querySelectorAll('.fcrs-card'));
+  var cur = 0, per = 1;
+
+  function cw()  { return cards[0] ? cards[0].offsetWidth : 300; }
+  function gap() { return 16; }
+  function max() { return Math.max(0, cards.length - per); }
+
+  function calcPer() {
+    per = Math.max(1, Math.floor((vp.offsetWidth + gap()) / (cw() + gap())));
+    cur = Math.min(cur, max());
+  }
+
+  function equalH() {
+    cards.forEach(function(c){ c.style.height = 'auto'; });
+    var m = 0;
+    cards.forEach(function(c){ if (c.offsetHeight > m) m = c.offsetHeight; });
+    if (m > 0) cards.forEach(function(c){ c.style.height = m + 'px'; });
+  }
+
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    for (var i = 0; i <= max(); i++) {
+      var b = document.createElement('button');
+      b.className = 'fcrs-dot' + (i === cur ? ' is-active' : '');
+      b.setAttribute('aria-label', 'Pagina ' + (i + 1));
+      b.dataset.i = i;
+      b.addEventListener('click', function(){ cur = +this.dataset.i; render(); });
+      dotsEl.appendChild(b);
+    }
+  }
+
+  function render() {
+    track.style.transform = 'translateX(-' + (cur * (cw() + gap())) + 'px)';
+    btnPrev.disabled = cur <= 0;
+    btnNext.disabled = cur >= max();
+    dotsEl.querySelectorAll('.fcrs-dot').forEach(function(d, i){
+      d.classList.toggle('is-active', i === cur);
+    });
+  }
+
+  btnPrev.addEventListener('click', function(){ if (cur > 0)     { cur--; render(); } });
+  btnNext.addEventListener('click', function(){ if (cur < max()) { cur++; render(); } });
+
+  var tx = 0;
+  track.addEventListener('touchstart', function(e){ tx = e.changedTouches[0].clientX; }, {passive:true});
+  track.addEventListener('touchend',   function(e){
+    var dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) {
+      if (dx < 0 && cur < max()) { cur++; render(); }
+      if (dx > 0 && cur > 0)     { cur--; render(); }
+    }
+  }, {passive:true});
+
+  calcPer(); equalH(); buildDots(); render();
+  var rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ calcPer(); equalH(); buildDots(); render(); }, 150);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Reviews slider",
+  "tag": "section",
+  "class": "reviews-slider-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Label boven de titel", "default": "Wat onze klanten zeggen" },
+    { "type": "text", "id": "title", "label": "Sectie titel", "default": "Klantbeoordelingen" },
+    { "type": "text", "id": "overall_score", "label": "Totaalscore", "default": "8.9" },
+    { "type": "text", "id": "review_count", "label": "Aantal reviews", "default": "803" },
+    { "type": "text", "id": "recommend_pct", "label": "% dat aanbeveelt", "default": "92" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "text", "id": "author", "label": "Naam klant", "default": "Klant" },
+        { "type": "text", "id": "date", "label": "Datum", "default": "01-01-2026" },
+        { "type": "range", "id": "score", "label": "Score (1-10)", "min": 1, "max": 10, "step": 1, "default": 10 },
+        { "type": "checkbox", "id": "recommended", "label": "Beveelt aan", "default": true },
+        { "type": "text", "id": "review_title", "label": "Review titel", "default": "Mijn ervaring" },
+        { "type": "textarea", "id": "review_text", "label": "Review tekst", "default": "Mijn ervaring met VCTparts" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews slider",
+      "blocks": [
+        { "type": "review", "settings": { "author": "Iris", "date": "14-03-2026", "score": 10, "recommended": true, "review_title": "Aanrader!", "review_text": "Top ervaring met VCT Parts voor de chiptuning van mijn auto. Vriendelijke service, duidelijke uitleg en vooral een geweldig resultaat. De auto rijdt merkbaar beter, heeft meer vermogen en reageert veel sneller." } },
+        { "type": "review", "settings": { "author": "Dieter Tops", "date": "14-03-2026", "score": 8, "recommended": true, "review_title": "H4", "review_text": "Tevreden van de lampen (H4)" } },
+        { "type": "review", "settings": { "author": "Simone", "date": "14-03-2026", "score": 10, "recommended": true, "review_title": "Heel tevreden", "review_text": "Heel tevreden over contact, product en snelle levering." } },
+        { "type": "review", "settings": { "author": "Marcel Glas", "date": "14-03-2026", "score": 10, "recommended": true, "review_title": "Super kwaliteit lampen", "review_text": "Super kwaliteit lampen!" } },
+        { "type": "review", "settings": { "author": "J.B. vd S.", "date": "14-03-2026", "score": 10, "recommended": true, "review_title": "Top lampen", "review_text": "Super blij met de lampen, echt een berg licht nu!" } },
+        { "type": "review", "settings": { "author": "Vincent Janssens", "date": "13-03-2026", "score": 10, "recommended": true, "review_title": "Goede service", "review_text": "Velcro straps voor bevestiging brandblusser besteld. Vlot en keurig ontvangen. Veel opvolgingsmails." } },
+        { "type": "review", "settings": { "author": "Paul Jansen", "date": "13-03-2026", "score": 10, "recommended": true, "review_title": "Snelle levering", "review_text": "Snelle levering, lampen goed verpakt." } },
+        { "type": "review", "settings": { "author": "S.P.", "date": "03-03-2026", "score": 10, "recommended": true, "review_title": "Snelle service en oplossing!", "review_text": "H7 led lampjes besteld voor de auto. Lampjes zelf zijn helemaal top! Was een lampje defect dat soms knipperde. Gebeld met VCT en ze waren heel behulpzaam en hebben gelijk een nieuwe set gestuurd. Zeker weer bestellen!" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

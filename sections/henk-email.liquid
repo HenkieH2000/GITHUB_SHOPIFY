@@ -1,0 +1,736 @@
+{%- comment -%}
+  VCTparts Email Popup — Versie 9.3 (section, Klaviyo API + GA4)
+  PLAATSING:
+    Shopify → Online Store → Themes → Edit code
+    → Sections → henk-email → plak code → Save
+    → theme.liquid direct voor </body>: {% section 'henk-email' %}
+{%- endcomment -%}
+
+{% assign fixed_coupon = 'NEWZ78ZJMWA' %}
+
+<style>
+#vcp {
+  all: unset;
+  display: flex !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(13,27,42,0.75) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  z-index: 2147483647 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  font-family: 'Figtree', Arial, Helvetica, sans-serif !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}
+#vcp.vcp-show { opacity: 1 !important; visibility: visible !important; }
+
+#vcp *, #vcp *::before, #vcp *::after {
+  all: unset;
+  box-sizing: border-box !important;
+  font-family: 'Figtree', Arial, Helvetica, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  line-height: normal !important;
+}
+
+#vcp-box {
+  display: grid !important;
+  grid-template-columns: 300px 1fr !important;
+  width: 100% !important;
+  max-width: 800px !important;
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.35) !important;
+  transform: translateY(16px) scale(0.98) !important;
+  transition: transform 0.36s cubic-bezier(0.34,1.38,0.64,1) !important;
+}
+#vcp.vcp-show #vcp-box { transform: translateY(0) scale(1) !important; }
+
+#vcp-x {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: absolute !important;
+  top: 12px !important; right: 12px !important;
+  width: 28px !important; height: 28px !important;
+  min-width: 28px !important; min-height: 28px !important;
+  background: rgba(255,255,255,0.14) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  color: rgba(255,255,255,0.7) !important;
+  font-size: 13px !important; font-weight: 700 !important;
+  transition: background 0.2s !important;
+}
+#vcp-x:hover { background: rgba(255,255,255,0.24) !important; color: #fff !important; }
+
+#vcp-left {
+  display: flex !important;
+  flex-direction: column !important;
+  background: #0D1B2A !important;
+  padding: 32px 26px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  min-height: 460px !important;
+}
+#vcp-left::before {
+  content: '' !important; display: block !important;
+  position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important;
+  height: 4px !important; background: #F58220 !important;
+}
+#vcp-left::after {
+  content: '' !important; display: block !important;
+  position: absolute !important;
+  bottom: -80px !important; left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 300px !important; height: 300px !important;
+  background: radial-gradient(circle, rgba(245,130,32,0.16) 0%, transparent 65%) !important;
+  border-radius: 50% !important; pointer-events: none !important;
+}
+
+#vcp-live {
+  display: flex !important; align-items: center !important; gap: 7px !important;
+  font-size: 11px !important; font-weight: 700 !important;
+  letter-spacing: 0.1em !important; text-transform: uppercase !important;
+  color: #F58220 !important; margin-bottom: 20px !important;
+}
+#vcp-dot {
+  display: block !important;
+  width: 7px !important; height: 7px !important;
+  min-width: 7px !important; min-height: 7px !important;
+  background: #F58220 !important; border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  animation: vcp-pulse 2s ease-in-out infinite !important;
+}
+@keyframes vcp-pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.4; transform:scale(0.6); }
+}
+
+#vcp-gift {
+  display: block !important; font-size: 56px !important; line-height: 1 !important;
+  margin-bottom: 18px !important; position: relative !important; z-index: 1 !important;
+  animation: vcp-float 3.5s ease-in-out infinite !important;
+  filter: drop-shadow(0 4px 14px rgba(245,130,32,0.35)) !important;
+}
+@keyframes vcp-float {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-6px); }
+}
+
+#vcp-title {
+  display: block !important; font-size: 20px !important; font-weight: 900 !important;
+  color: #fff !important; line-height: 1.2 !important;
+  margin-bottom: 8px !important; position: relative !important; z-index: 1 !important;
+}
+#vcp-title span { color: #F58220 !important; }
+
+#vcp-sub {
+  display: block !important; font-size: 12px !important;
+  color: rgba(255,255,255,0.48) !important; line-height: 1.6 !important;
+  margin-bottom: 20px !important; position: relative !important; z-index: 1 !important;
+}
+
+#vcp-usps {
+  display: flex !important; flex-direction: column !important;
+  gap: 10px !important; list-style: none !important;
+  position: relative !important; z-index: 1 !important; flex: 1 !important;
+}
+#vcp-usps li {
+  display: flex !important; align-items: center !important; gap: 9px !important;
+  font-size: 12px !important; color: rgba(255,255,255,0.8) !important; line-height: 1.4 !important;
+}
+.vcp-chk {
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  width: 18px !important; height: 18px !important;
+  min-width: 18px !important; min-height: 18px !important;
+  background: rgba(245,130,32,0.18) !important;
+  border: 1px solid rgba(245,130,32,0.42) !important;
+  border-radius: 4px !important; font-size: 9px !important;
+  font-weight: 800 !important; color: #F58220 !important; flex-shrink: 0 !important;
+}
+
+#vcp-rating {
+  display: flex !important; align-items: center !important; gap: 10px !important;
+  margin-top: 20px !important; padding: 11px 13px !important;
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 8px !important; position: relative !important; z-index: 1 !important;
+}
+#vcp-rscore {
+  display: block !important; font-size: 22px !important; font-weight: 900 !important;
+  color: #F58220 !important; line-height: 1 !important; flex-shrink: 0 !important;
+}
+.vcp-rright { display: flex !important; flex-direction: column !important; gap: 2px !important; }
+.vcp-stars  { display: block !important; color: #F58220 !important; font-size: 12px !important; letter-spacing: 1px !important; }
+.vcp-rlbl   { display: block !important; font-size: 10px !important; color: rgba(255,255,255,0.38) !important; }
+
+#vcp-right {
+  display: flex !important; flex-direction: column !important;
+  justify-content: center !important;
+  padding: 36px 34px 30px !important; background: #ffffff !important;
+}
+
+.vcp-step { display: none !important; flex-direction: column !important; }
+.vcp-step.vcp-on { display: flex !important; }
+
+#vcp-s1-head {
+  display: block !important; font-size: 26px !important; font-weight: 900 !important;
+  color: #1E293B !important; line-height: 1.2 !important; margin-bottom: 7px !important;
+}
+#vcp-s1-head em { color: #F58220 !important; font-style: normal !important; }
+#vcp-s1-sub {
+  display: block !important; font-size: 13px !important;
+  color: #64748B !important; line-height: 1.6 !important; margin-bottom: 28px !important;
+}
+
+#vcp-mystery-btn {
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+  gap: 10px !important; width: 100% !important;
+  background: #0D1B2A !important;
+  border: 2px solid rgba(245,130,32,0.35) !important;
+  border-radius: 12px !important; padding: 28px 20px !important;
+  cursor: pointer !important;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s !important;
+  margin-bottom: 14px !important;
+  position: relative !important; overflow: hidden !important;
+}
+#vcp-mystery-btn::after {
+  content: '' !important; display: block !important; position: absolute !important;
+  bottom: -60px !important; left: 50% !important; transform: translateX(-50%) !important;
+  width: 200px !important; height: 200px !important;
+  background: radial-gradient(circle, rgba(245,130,32,0.14) 0%, transparent 65%) !important;
+  border-radius: 50% !important; pointer-events: none !important;
+}
+#vcp-mystery-btn:hover {
+  border-color: #F58220 !important; background: #0f2035 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(245,130,32,0.22) !important;
+}
+#vcp-mystery-btn:active { transform: translateY(0) !important; box-shadow: none !important; }
+#vcp-mystery-icon {
+  display: block !important; font-size: 40px !important; line-height: 1 !important;
+  animation: vcp-float 3.5s ease-in-out infinite !important;
+  position: relative !important; z-index: 1 !important;
+}
+#vcp-mystery-label {
+  display: block !important; font-size: 17px !important; font-weight: 900 !important;
+  color: #fff !important; position: relative !important; z-index: 1 !important;
+}
+#vcp-mystery-hint {
+  display: block !important; font-size: 12px !important;
+  color: rgba(255,255,255,0.45) !important; position: relative !important; z-index: 1 !important;
+}
+
+#vcp-decline {
+  display: block !important; font-size: 11px !important; color: #CBD5E1 !important;
+  background: none !important; border: none !important; cursor: pointer !important;
+  width: 100% !important; text-align: center !important; padding: 4px 0 !important;
+  transition: color 0.2s !important;
+}
+#vcp-decline:hover { color: #94A3B8 !important; }
+
+#vcp-back {
+  display: inline-flex !important; align-items: center !important; gap: 5px !important;
+  font-size: 12px !important; color: #94A3B8 !important;
+  background: none !important; border: none !important; cursor: pointer !important;
+  margin-bottom: 14px !important; transition: color 0.2s !important;
+}
+#vcp-back:hover { color: #F58220 !important; }
+
+#vcp-selbadge {
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  padding: 10px 14px !important; border-radius: 8px !important;
+  font-size: 13px !important; font-weight: 700 !important; margin-bottom: 14px !important;
+  background: #FEF3E8 !important; border: 1px solid #F9D4AC !important; color: #92400E !important;
+}
+
+#vcp-s2-head {
+  display: block !important; font-size: 22px !important; font-weight: 900 !important;
+  color: #1E293B !important; line-height: 1.2 !important; margin-bottom: 5px !important;
+}
+#vcp-s2-sub {
+  display: block !important; font-size: 13px !important;
+  color: #64748B !important; line-height: 1.6 !important; margin-bottom: 16px !important;
+}
+
+#vcp-timer {
+  display: flex !important; align-items: center !important; gap: 9px !important;
+  padding: 10px 14px !important; background: #FEF3E8 !important;
+  border: 1px solid #F9D4AC !important; border-radius: 8px !important; margin-bottom: 14px !important;
+}
+.vcp-timer-lbl {
+  display: block !important; font-size: 12px !important; color: #92400E !important; flex: 1 !important;
+}
+#vcp-timer-cnt {
+  display: block !important; font-size: 14px !important; font-weight: 800 !important;
+  color: #0D1B2A !important; letter-spacing: 0.06em !important;
+  font-variant-numeric: tabular-nums !important;
+  min-width: 40px !important; text-align: right !important;
+}
+
+.vcp-field { display: block !important; margin-bottom: 10px !important; }
+.vcp-input {
+  display: block !important; width: 100% !important; padding: 13px 15px !important;
+  background: #F8FAFC !important; border: 1.5px solid #E2E8F0 !important;
+  border-radius: 8px !important; font-size: 15px !important; color: #1E293B !important;
+  outline: none !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  -webkit-appearance: none !important; appearance: none !important;
+}
+.vcp-input::placeholder { color: #94A3B8 !important; }
+.vcp-input:focus {
+  border-color: #F58220 !important; background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(245,130,32,0.12) !important;
+}
+.vcp-input.vcp-err { border-color: #EF4444 !important; background: #FEF2F2 !important; }
+.vcp-errmsg {
+  display: none !important; font-size: 11px !important;
+  color: #EF4444 !important; margin-top: 4px !important;
+}
+.vcp-input.vcp-err + .vcp-errmsg { display: block !important; }
+
+.vcp-cta {
+  display: block !important; width: 100% !important; padding: 15px 20px !important;
+  background: #F58220 !important; color: #ffffff !important;
+  border: none !important; border-radius: 100px !important;
+  font-size: 15px !important; font-weight: 800 !important; text-align: center !important;
+  cursor: pointer !important;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s !important;
+  margin-top: 6px !important;
+  -webkit-appearance: none !important; appearance: none !important;
+}
+.vcp-cta:hover:not(:disabled) {
+  background: #D96E0F !important; transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(245,130,32,0.38) !important;
+}
+.vcp-cta:disabled { opacity: 0.6 !important; cursor: default !important; }
+
+.vcp-spinner {
+  display: none !important; width: 18px !important; height: 18px !important;
+  min-width: 18px !important; min-height: 18px !important;
+  border: 2px solid rgba(255,255,255,0.3) !important;
+  border-top-color: #fff !important; border-radius: 50% !important;
+  animation: vcp-spin 0.7s linear infinite !important; margin: 0 auto !important;
+}
+@keyframes vcp-spin { to { transform:rotate(360deg); } }
+.vcp-loading .vcp-cta-txt { display: none !important; }
+.vcp-loading .vcp-spinner  { display: block !important; }
+
+#vcp-privacy {
+  display: block !important; font-size: 11px !important; color: #CBD5E1 !important;
+  text-align: center !important; margin-top: 10px !important; line-height: 1.5 !important;
+}
+
+#vcp-s3 { align-items: center !important; text-align: center !important; }
+#vcp-confetti {
+  display: block !important; font-size: 50px !important; line-height: 1 !important;
+  margin-bottom: 14px !important;
+  animation: vcp-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+@keyframes vcp-pop {
+  0%   { transform:scale(0); opacity:0; }
+  100% { transform:scale(1); opacity:1; }
+}
+#vcp-s3-head {
+  display: block !important; font-size: 22px !important; font-weight: 900 !important;
+  color: #1E293B !important; line-height: 1.2 !important; margin-bottom: 6px !important;
+}
+#vcp-s3-head em { color: #F58220 !important; font-style: normal !important; }
+#vcp-s3-sub {
+  display: block !important; font-size: 13px !important;
+  color: #64748B !important; line-height: 1.6 !important; margin-bottom: 20px !important;
+}
+
+#vcp-shopbtn {
+  display: block !important; width: 100% !important; background: #F58220 !important;
+  color: #ffffff !important; font-size: 15px !important; font-weight: 800 !important;
+  padding: 15px 20px !important; border-radius: 100px !important;
+  text-align: center !important; cursor: pointer !important; border: none !important;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s !important;
+}
+#vcp-shopbtn:hover {
+  background: #D96E0F !important; transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(245,130,32,0.38) !important;
+}
+
+body.vcp-noscroll { overflow: hidden !important; }
+
+@media (max-width: 640px) {
+  #vcp { padding: 16px !important; }
+  #vcp-box {
+    display: flex !important; flex-direction: column !important;
+    grid-template-columns: none !important; border-radius: 14px !important;
+    max-width: 100% !important; width: 100% !important;
+    max-height: 90dvh !important; overflow-y: auto !important;
+  }
+  #vcp.vcp-show #vcp-box { transform: translateY(0) scale(1) !important; }
+  #vcp-left {
+    flex-direction: row !important; align-items: center !important;
+    padding: 14px 18px !important; min-height: auto !important; gap: 14px !important;
+  }
+  #vcp-left::after { display: none !important; }
+  #vcp-sub, #vcp-usps, #vcp-rating { display: none !important; }
+  #vcp-gift { font-size: 42px !important; margin-bottom: 0 !important; animation: none !important; flex-shrink: 0 !important; }
+  #vcp-left-text { display: flex !important; flex-direction: column !important; gap: 2px !important; }
+  #vcp-live { margin-bottom: 4px !important; font-size: 10px !important; }
+  #vcp-title { font-size: 15px !important; margin-bottom: 0 !important; }
+  #vcp-right { padding: 22px 18px 28px !important; }
+  #vcp-s1-head { font-size: 20px !important; }
+  #vcp-mystery-btn { padding: 22px 16px !important; }
+  #vcp-mystery-icon { font-size: 32px !important; }
+  #vcp-mystery-label { font-size: 15px !important; }
+  #vcp-s2-head { font-size: 19px !important; }
+  .vcp-cta, #vcp-shopbtn { padding: 14px !important; font-size: 15px !important; }
+  #vcp-s3-head { font-size: 20px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #vcp, #vcp *, #vcp *::before, #vcp *::after {
+    transition: none !important; animation: none !important;
+  }
+}
+</style>
+
+<div id="vcp" role="dialog" aria-modal="true" aria-labelledby="vcp-title" aria-hidden="true">
+  <div id="vcp-box">
+    <button id="vcp-x" aria-label="Sluiten">✕</button>
+
+    <div id="vcp-left">
+      <span id="vcp-gift" aria-hidden="true">🎁</span>
+      <div id="vcp-left-text">
+        <div id="vcp-live">
+          <span id="vcp-dot" aria-hidden="true"></span>
+          Exclusief aanbod
+        </div>
+        <h2 id="vcp-title">
+          Jouw auto verdient<br><span>het beste.</span>
+        </h2>
+        <p id="vcp-sub">Schrijf je in en ontvang een exclusieve mystery korting.</p>
+      </div>
+      <ul id="vcp-usps" aria-label="Voordelen">
+        <li><span class="vcp-chk" aria-hidden="true">✓</span>Voor 20:00 besteld, vandaag verstuurd</li>
+        <li><span class="vcp-chk" aria-hidden="true">✓</span>Gratis verzending vanaf €39</li>
+        <li><span class="vcp-chk" aria-hidden="true">✓</span>30 dagen niet goed? Geld terug!</li>
+        <li><span class="vcp-chk" aria-hidden="true">✓</span>Designed in the Netherlands</li>
+      </ul>
+      <div id="vcp-rating" aria-label="Beoordeling 9,4 uit 10">
+        <span id="vcp-rscore">9,4</span>
+        <div class="vcp-rright">
+          <span class="vcp-stars" aria-hidden="true">★★★★★</span>
+          <span class="vcp-rlbl">FeedbackCompany · 5.000+ klanten</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="vcp-right">
+
+      <!-- Stap 1 -->
+      <div id="vcp-s1" class="vcp-step vcp-on">
+        <h3 id="vcp-s1-head">Ontvang jouw<br><em>mystery korting</em></h3>
+        <p id="vcp-s1-sub">Schrijf je in op onze nieuwsbrief en ontgrendel een exclusieve kortingscode.</p>
+        <button id="vcp-mystery-btn" aria-label="Mystery korting claimen">
+          <span id="vcp-mystery-icon" aria-hidden="true">🔮</span>
+          <span id="vcp-mystery-label">Claim mijn mystery korting</span>
+          <span id="vcp-mystery-hint">Klik en ontdek wat je bespaart</span>
+        </button>
+        <button id="vcp-decline">Nee, ik betaal liever de volle prijs.</button>
+      </div>
+
+      <!-- Stap 2 -->
+      <div id="vcp-s2" class="vcp-step">
+        <button id="vcp-back">← Terug</button>
+        <div id="vcp-selbadge">
+          <span style="font-size:15px;flex-shrink:0" aria-hidden="true">🔮</span>
+          <span>Mystery korting geselecteerd</span>
+        </div>
+        <h3 id="vcp-s2-head">Bijna daar...</h3>
+        <p id="vcp-s2-sub">Vul je e-mailadres in en ontvang jouw persoonlijke kortingscode.</p>
+        <div id="vcp-timer">
+          <span style="font-size:14px;flex-shrink:0" aria-hidden="true">⏱</span>
+          <span class="vcp-timer-lbl">Aanbod verloopt over</span>
+          <span id="vcp-timer-cnt" aria-live="polite">10:00</span>
+        </div>
+        <div class="vcp-field">
+          <input class="vcp-input" type="email" id="vcp-email"
+            placeholder="E-mailadres" autocomplete="email" aria-label="E-mailadres">
+          <p class="vcp-errmsg" role="alert">Vul een geldig e-mailadres in.</p>
+        </div>
+        <button type="button" class="vcp-cta" id="vcp-submitbtn">
+          <span class="vcp-cta-txt">Onthul mijn kortingscode →</span>
+          <span class="vcp-spinner" aria-hidden="true"></span>
+        </button>
+        <p id="vcp-privacy">Geen spam. Altijd afmelden mogelijk. Wij respecteren je privacy.</p>
+      </div>
+
+      <!-- Stap 3 -->
+      <div id="vcp-s3" class="vcp-step">
+        <span id="vcp-confetti" aria-hidden="true">🎊</span>
+        <h3 id="vcp-s3-head">Jouw kortingscode<br><em>is onderweg!</em></h3>
+        <p id="vcp-s3-sub">Check je inbox — je kortingscode staat klaar. Voer hem in bij het afrekenen en ontdek je korting.</p>
+        <button id="vcp-shopbtn">Ga verder met winkelen →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var GA4_ID = 'G-X0F35QQYBP';
+
+  var CFG = {
+    coupon      : '{{ fixed_coupon }}',
+    klaviyoKey  : 'Yj5QDm',
+    klaviyoList : 'XzqxwP',
+    countdown   : 600,
+    ckSeen      : 'vct_popup_seen',
+    ckSub       : 'vct_subscribed',
+    ckDays      : 7,
+    mobileDelay : 8000
+  };
+
+  var S = {
+    step: 1, timer: null,
+    secs: CFG.countdown, shown: false, exitBound: false
+  };
+
+  function g(id) { return document.getElementById(id); }
+
+  var el = {
+    overlay   : g('vcp'),
+    closeBtn  : g('vcp-x'),
+    steps     : { 1: g('vcp-s1'), 2: g('vcp-s2'), 3: g('vcp-s3') },
+    mysteryBtn: g('vcp-mystery-btn'),
+    decline   : g('vcp-decline'),
+    back      : g('vcp-back'),
+    submitBtn : g('vcp-submitbtn'),
+    timerEl   : g('vcp-timer-cnt'),
+    emailInp  : g('vcp-email'),
+    shopBtn   : g('vcp-shopbtn')
+  };
+
+  function isMobile() {
+    return window.innerWidth <= 640 || /Mobi|Android/i.test(navigator.userAgent);
+  }
+
+  // ── GA4 event helper ────────────────────────────────────────────────────────
+  function trackEvent(name, params) {
+  // GA4
+  try {
+    if (typeof gtag === 'function') {
+      gtag('event', name, params);
+    }
+  } catch(e) {}
+  // Shopify Analytics
+  try {
+    if (typeof analytics !== 'undefined' && typeof analytics.publish === 'function') {
+      analytics.publish(name, params);
+    }
+  } catch(e) {}
+}
+
+  function setCk(n, v, d) {
+    var e = new Date();
+    e.setTime(e.getTime() + d * 86400000);
+    document.cookie = n + '=' + encodeURIComponent(v) +
+      '; expires=' + e.toUTCString() + '; path=/; SameSite=Lax';
+  }
+  function getCk(n) {
+    var m = document.cookie.match(
+      new RegExp('(?:^|; )' + n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '=([^;]*)')
+    );
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  function show() {
+    if (S.shown || getCk(CFG.ckSub) || getCk(CFG.ckSeen)) return;
+    S.shown = true;
+    el.overlay.classList.add('vcp-show');
+    el.overlay.removeAttribute('aria-hidden');
+    document.body.classList.add('vcp-noscroll');
+    trackEvent('popup_shown', {
+      device: isMobile() ? 'mobile' : 'desktop'
+    });
+  }
+
+  function hide() {
+    el.overlay.classList.remove('vcp-show');
+    el.overlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('vcp-noscroll');
+    stopTimer();
+    setCk(CFG.ckSeen, '1', CFG.ckDays);
+  }
+
+  function goStep(n) {
+    var cur = el.steps[S.step];
+    var nxt = el.steps[n];
+    if (cur) cur.classList.remove('vcp-on');
+    S.step = n;
+    if (nxt) nxt.classList.add('vcp-on');
+  }
+
+  function goToEmail() {
+    goStep(2);
+    startTimer();
+    setTimeout(function () { el.emailInp.focus(); }, 50);
+    trackEvent('popup_knop1_geklikt', {
+      device: isMobile() ? 'mobile' : 'desktop'
+    });
+  }
+
+  function tick() {
+    var m = Math.floor(S.secs / 60);
+    var s = S.secs % 60;
+    el.timerEl.textContent =
+      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    if (S.secs === 0) el.timerEl.style.setProperty('color', '#EF4444', 'important');
+  }
+  function startTimer() {
+    S.secs = CFG.countdown;
+    tick();
+    stopTimer();
+    S.timer = setInterval(function () {
+      S.secs = Math.max(0, S.secs - 1);
+      tick();
+      if (S.secs === 0) stopTimer();
+    }, 1000);
+  }
+  function stopTimer() {
+    if (S.timer) { clearInterval(S.timer); S.timer = null; }
+  }
+
+  function valid(inp) {
+    var ok = (/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(inp.value.trim());
+    inp.classList.toggle('vcp-err', !ok);
+    return ok;
+  }
+
+  function subscribe(email, cb) {
+    fetch('https://a.klaviyo.com/client/subscriptions/?company_id=' + CFG.klaviyoKey, {
+      method  : 'POST',
+      headers : {
+        'Content-Type' : 'application/json',
+        'revision'     : '2023-12-15'
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'subscription',
+          attributes: {
+            profile: {
+              data: {
+                type: 'profile',
+                attributes: {
+                  email: email,
+                  properties: {
+                    source: 'popup',
+                    coupon_used: CFG.coupon
+                  }
+                }
+              }
+            }
+          },
+          relationships: {
+            list: {
+              data: {
+                type : 'list',
+                id   : CFG.klaviyoList
+              }
+            }
+          }
+        }
+      })
+    })
+    .then(function(res) {
+      console.log('Klaviyo status:', res.status);
+      cb();
+    })
+    .catch(function(err) {
+      console.error('Klaviyo fout:', err);
+      cb();
+    });
+  }
+
+  function handleSubmit() {
+    if (!valid(el.emailInp)) return;
+    el.submitBtn.disabled = true;
+    el.submitBtn.classList.add('vcp-loading');
+    subscribe(el.emailInp.value.trim(), function () {
+      doSuccess();
+    });
+  }
+
+  function doSuccess() {
+    el.submitBtn.disabled = false;
+    el.submitBtn.classList.remove('vcp-loading');
+    stopTimer();
+    goStep(3);
+    setCk(CFG.ckSub, '1', 365);
+    trackEvent('popup_email_ingevuld', {
+      device: isMobile() ? 'mobile' : 'desktop'
+    });
+  }
+
+  function initTriggers() {
+    if (getCk(CFG.ckSub) || getCk(CFG.ckSeen)) return;
+    var pages = (parseInt(sessionStorage.getItem('vct_pg') || '0', 10)) + 1;
+    sessionStorage.setItem('vct_pg', pages);
+    if (isMobile()) {
+      if (pages >= 2) setTimeout(show, CFG.mobileDelay);
+    } else {
+      if (!S.exitBound) {
+        S.exitBound = true;
+        document.addEventListener('mouseleave', function (e) {
+          if (e.clientY < 5) show();
+        });
+      }
+      if (pages >= 2) setTimeout(show, 15000);
+    }
+  }
+
+  el.closeBtn.addEventListener('click', hide);
+  el.overlay.addEventListener('click', function (e) {
+    if (e.target === el.overlay) hide();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && el.overlay.classList.contains('vcp-show')) hide();
+  });
+  el.mysteryBtn.addEventListener('click', goToEmail);
+  el.decline.addEventListener('click', hide);
+  el.back.addEventListener('click', function () { goStep(1); stopTimer(); });
+  el.submitBtn.addEventListener('click', handleSubmit);
+  el.shopBtn.addEventListener('click', hide);
+  el.emailInp.addEventListener('blur', function () { valid(el.emailInp); });
+  el.emailInp.addEventListener('input', function () {
+    if (el.emailInp.classList.contains('vcp-err')) valid(el.emailInp);
+  });
+  el.emailInp.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handleSubmit();
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTriggers);
+  } else {
+    initTriggers();
+  }
+
+}());
+</script>
+
+{% schema %}
+{
+  "name": "VCT Popup",
+  "settings": []
+}
+{% endschema %}

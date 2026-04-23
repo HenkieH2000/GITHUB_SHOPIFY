@@ -1,0 +1,364 @@
+{% doc %}
+  Subcollectie navigatie — pill/chip stijl, horizontaal scrollbaar.
+  Volledig hardcoded parent→children mapping. Gekoppeld aan Customizer instellingen.
+{% enddoc %}
+
+{% comment %} 
+  We gebruiken 'section' in plaats van 'block' omdat je schema presets bevat (wat betekent dat het een sectie is).
+{% endcomment %}
+{% assign ai_gen_id = section.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .subnav-{{ ai_gen_id }} {
+    width: 100%;
+    padding: {{ section.settings.padding_v }}px 0;
+  }
+  .subnav__label-{{ ai_gen_id }} {
+    font-family: inherit !important; /* Dwingt het font van je thema af */
+    font-size: {{ section.settings.label_size }}px;
+    font-weight: 600; /* Iets dikker voor een betere match met thema-labels */
+    color: {{ section.settings.label_color }};
+    letter-spacing: normal; /* Zet dit op normal als het font te 'uitgerekt' lijkt */
+    margin-bottom: 8px;
+    padding: 0 2px;
+    text-transform: none; /* Of gebruik 'uppercase' als je thema dat ook doet voor labels */
+  }
+  .subnav__track-wrapper-{{ ai_gen_id }} {
+    position: relative;
+  }
+  .subnav__track-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 3px 36px 5px 2px;
+    align-items: center;
+  }
+  .subnav__track-{{ ai_gen_id }}::-webkit-scrollbar {
+    display: none;
+  }
+  .subnav__chip-{{ ai_gen_id }} {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    flex-shrink: 0 !important;
+    border-radius: {{ section.settings.chip_radius }}px !important;
+    border: 1.5px solid {{ section.settings.chip_border_color }} !important;
+    background: {{ section.settings.chip_bg }} !important;
+    padding: 7px 14px 7px 6px !important;
+    text-decoration: none !important;
+    color: {{ section.settings.chip_text_color }} !important;
+    font-size: {{ section.settings.chip_font_size }}px !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    transition: all 0.15s ease !important;
+    cursor: pointer !important;
+    line-height: 1 !important;
+  }
+  .subnav__chip-{{ ai_gen_id }}:hover {
+    border-color: #aaa !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07) !important;
+  }
+  .subnav__chip--active-{{ ai_gen_id }} {
+    border-color: {{ section.settings.active_border_color }} !important;
+    background: {{ section.settings.active_bg_color }} !important;
+    color: {{ section.settings.active_text_color }} !important;
+  }
+  .subnav__chip--active-{{ ai_gen_id }}:hover {
+    border-color: {{ section.settings.active_border_color }} !important;
+    background: {{ section.settings.active_bg_color }} !important;
+    color: {{ section.settings.active_text_color }} !important;
+  }
+  .subnav__thumb-{{ ai_gen_id }} {
+    width: {{ section.settings.thumb_size }}px;
+    height: {{ section.settings.thumb_size }}px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f0f0f0;
+    display: block;
+  }
+  .subnav__placeholder-{{ ai_gen_id }} {
+    width: {{ section.settings.thumb_size }}px;
+    height: {{ section.settings.thumb_size }}px;
+    border-radius: 50%;
+    background: #efefef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+  }
+  .subnav__arrow-{{ ai_gen_id }} {
+    all: unset !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    border: 1.5px solid {{ section.settings.arrow_border }} !important;
+    background: {{ section.settings.arrow_bg }} !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: -10px 0 18px rgba(255,255,255,1) !important;
+    color: {{ section.settings.arrow_icon_color }} !important;
+    z-index: 2 !important;
+    transition: border-color 0.15s !important;
+  }
+{% endstyle %}
+
+<div class="subnav-{{ ai_gen_id }}" {{ section.shopify_attributes }}>
+
+  {% assign current_handle = collection.handle %}
+  {% assign nav_items = "" %}
+
+  {% comment %} Hardcoded Collection Mapping {% endcomment %}
+  {% if current_handle == 'detailing' %}
+    {% assign nav_items = "detailing-exterieur|Exterieur,detailing-interieur|Interieur,detailing-combideals|Combideals,alle-flesjes|Alle Flesjes,detailing-accessoires|Accessoires" %}
+  {% elsif current_handle == 'verlichting' %}
+    {% assign nav_items = "groot-dimlicht|Groot- & Dimlicht,dagrijverlichting-richtingaanwijzers|Dagrijverlichting & Richtingaanwijzers,kenteken-interieurverlichting|Kenteken- & Interieurverlichting,mistlicht|Mistlicht,rem-achterlicht|Rem- & Achterlicht,verstraler-spots-ledbars|Verstraler spots & Ledbars,zwaailicht-stroboscoop|Zwaailicht & Stroboscoop,reflectoren-gevarenlichten|Reflectoren & Gevarenlichten" %}
+  {% elsif current_handle == 'verstraler-spots-ledbars' %}
+    {% assign nav_items = "verstraler-spots|Verstraler spots,ledbars|Ledbars" %}
+  {% elsif current_handle == 'zwaailicht-stroboscoop' %}
+    {% assign nav_items = "grillflisters|Grillflisters,raamflitsers|Raamflitsers,magneetzwaailicht|Magneetzwaailicht,buiszwaailicht|Buiszwaailicht,signaalbalken|Signaalbalken,batterij-zwaailicht|Batterij Zwaailicht,blauwe-zwaailichten|Blauwe Zwaailichten" %}
+  {% elsif current_handle == 'exterieur' %}
+    {% assign nav_items = "achteruitrijcameras-sensoren|Achteruitrijcamera's & Sensoren,antennes-haaienvinnen|Antennes & Haaienvinnen,carrosserie-bumpers|Carrosserie & Bumpers,kentekenplaathouders|Kentekenplaathouders,motorkap|Motorkap,spoilers-vinnen|Spoilers & Vinnen,trekhaken-sleepogen|Trekhaken & Sleepogen,toeters-hoorns|Toeters & Hoorns,tanken|Tanken,uitlaatkleppen|Uitlaatkleppen,uitlaat-sierstukken|Uitlaat Sierstukken,koppelingsloten|Koppelingsloten,hoezen-afdekking|Hoezen & Afdekking,velgen|Velgen" %}
+  {% elsif current_handle == 'interieur' %}
+    {% assign nav_items = "gps-navigatie-systemen|GPS & Navigatie Systemen,dashcam-toebehoren|Dashcam & Toebehoren,telefoonhouders|Telefoonhouders,bekerhouders|Bekerhouders,autoladers|Autoladers,usb-laadkabels|USB Laadkabels,splitters|Splitters,carplay-android-auto|Carplay & Android Auto,decoratie-bekleding|Decoratie & Bekleding,geuren-luchtverfrissers|Geuren & Luchtverfrissers,transmitter-carkit|Transmitter & Carkit,radio-beeldschermen|Radio & Beeldschermen,verwarming-koeling-ventilatie|Verwarming & Koeling / Ventilatie,brillenhouders|Brillenhouders,spiegels|Spiegels,gordel-accessoires|Gordel Accessoires,digitale-clusters|Digitale Clusters" %}
+  {% elsif current_handle == 'dashcam-toebehoren' %}
+    {% assign nav_items = "dashcams|Dashcams,dashcam-voeding|Dashcam Voeding,sd-kaarten|SD Kaarten" %}
+  {% elsif current_handle == 'telefoonhouders' %}
+    {% assign nav_items = "telefoonhouder-dashboard-voorruit|Telefoonhouder Dashboard/Voorruit,telefoonhouder-ventilatierooster|Telefoonhouder Ventilatierooster,telefoonhouder-magsafe|Telefoonhouder MagSafe" %}
+  {% elsif current_handle == 'motorisch' %}
+    {% assign nav_items = "acculaders|Acculaders,luchtfilters|Luchtfilters,motor-turbo|Motor & Turbo,software-programmeren|Software & Programmeren,zekeringen-relais|Zekeringen & Relais" %}
+  {% elsif current_handle == 'onderhoud' %}
+    {% assign nav_items = "gereedschap|Gereedschap,wassen-poetsen|Wassen & Poetsen,velgen-wassen|Velgen Wassen,velgenwissel-gereedschap|Velgenwissel Gereedschap,handschoenen|Handschoenen" %}
+  {% elsif current_handle == 'verf-folie-sticker' %}
+    {% assign nav_items = "raam-tintfolie|Raam Tintfolie,lamp-tintfolie|Lamp Tintfolie,plastidip|Plastidip,verf-spuitbussen-aerosols|Verf Spuitbussen & Aerosols,folie-tools|Folie Tools" %}
+  {% elsif current_handle == 'wielen' %}
+    {% assign nav_items = "banden-velgenreparatie|Banden- & Velgenreparatie,wielbout-afdekkapjes|Wielbout Afdekkapjes,velgen-wassen|Velgen Wassen,sneeuwkettingen|Sneeuwkettingen,ventieldoppen|Ventieldoppen,wielkeggen|Wielkeggen,spoorverbreders|Spoorverbreders,wielmoeren-slot-bouten|Wielmoeren & (slot)Bouten,velgenwissel-gereedschap|Velgen Wissel Gereedschap,velgen-bescherming|Velgen Bescherming,velgen|Velgen" %}
+  {% elsif current_handle == 'sneeuwkettingen' %}
+    {% assign nav_items = "textiele-sneeuwkettingen|Textiele Sneeuwkettingen,stalen-sneeuwkettingen|Stalen Sneeuwkettingen" %}
+  {% elsif current_handle == 'velgen' %}
+    {% assign nav_items = "17-inch|17 inch,18-inch|18 inch,19-inch|19 inch,20-inch|20 inch,21-inch|21 inch,22-inch|22 inch" %}
+  {% elsif current_handle == 'audio' %}
+    {% assign nav_items = "subwoofers|Subwoofers,versterkers|Versterkers,speakers|Speakers,zekeringen-relais|Zekeringen & Relais" %}
+  {% elsif current_handle == 'veiligheid' %}
+    {% assign nav_items = "autoalarm-sloten|Autoalarm & Sloten,brandblussers|Brandblussers,noodsituaties|Noodsituaties,ehbo-kits|EHBO Kits,koppelingsloten|Koppelingsloten,gordel-accessoires|Gordel Accessoires" %}
+  {% elsif current_handle == 'inbouwservice' %}
+    {% assign nav_items = "carplay-schermen|Carplay Schermen,carplay-box|Carplay Box,dashcams|Dashcams,digitale-clusters|Digitale Clusters" %}
+  {% endif %}
+
+  {% if nav_items != blank %}
+    {% if section.settings.label != blank %}
+      <div class="subnav__label-{{ ai_gen_id }}">{{ section.settings.label }}</div>
+    {% endif %}
+    {% assign items_array = nav_items | split: ',' %}
+    <div class="subnav__track-wrapper-{{ ai_gen_id }}">
+      <div class="subnav__track-{{ ai_gen_id }}" id="subnav-track-{{ ai_gen_id }}">
+        {%- for item in items_array -%}
+          {%- assign parts = item | split: '|' -%}
+          {%- assign child_handle = parts[0] -%}
+          {%- assign child_title = parts[1] -%}
+          {%- assign child_coll = collections[child_handle] -%}
+          {%- assign is_active = false -%}
+          {%- if child_handle == current_handle -%}{%- assign is_active = true -%}{%- endif -%}
+          
+          <a href="/collections/{{ child_handle }}" class="subnav__chip-{{ ai_gen_id }}{% if is_active %} subnav__chip--active-{{ ai_gen_id }}{% endif %}" aria-label="{{ child_title }}">
+            {%- if child_coll and child_coll.image -%}
+              <img src="{{ child_coll.image | image_url: width: 56 }}" alt="{{ child_coll.image.alt | escape }}" class="subnav__thumb-{{ ai_gen_id }}" loading="lazy" width="{{ section.settings.thumb_size }}" height="{{ section.settings.thumb_size }}">
+            {%- elsif child_coll and child_coll.products.first and child_coll.products.first.featured_image -%}
+              <img src="{{ child_coll.products.first.featured_image | image_url: width: 56 }}" alt="{{ child_title | escape }}" class="subnav__thumb-{{ ai_gen_id }}" loading="lazy" width="{{ section.settings.thumb_size }}" height="{{ section.settings.thumb_size }}">
+            {%- else -%}
+              <span class="subnav__placeholder-{{ ai_gen_id }}" aria-hidden="true">{{ child_title | slice: 0 }}</span>
+            {%- endif -%}
+            {{- child_title -}}
+          </a>
+        {%- endfor -%}
+      </div>
+      <button class="subnav__arrow-{{ ai_gen_id }}" id="subnav-arrow-{{ ai_gen_id }}" type="button" aria-label="Meer categorieën">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 2L8 6L4 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  {% endif %}
+
+</div>
+
+<script>
+(function () {
+  var track = document.getElementById('subnav-track-{{ ai_gen_id }}');
+  var arrow = document.getElementById('subnav-arrow-{{ ai_gen_id }}');
+  if (!track || !arrow) return;
+  function sync() {
+    arrow.style.display = (track.scrollLeft + track.clientWidth >= track.scrollWidth - 4) ? 'none' : 'flex';
+  }
+  arrow.addEventListener('click', function () {
+    track.scrollBy({ left: 220, behavior: 'smooth' });
+  });
+  track.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Subcollectie navigatie",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Algemene Layout"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label tekst",
+      "default": "Navigeer snel"
+    },
+    {
+      "type": "range",
+      "id": "padding_v",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Verticale sectie padding",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Label Stijl"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Label lettergrootte",
+      "default": 11
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label kleur",
+      "default": "#888888"
+    },
+    {
+      "type": "header",
+      "content": "Chip Stijl (Standaard)"
+    },
+    {
+      "type": "range",
+      "id": "chip_font_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Tekstgrootte",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "chip_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Afronding hoeken",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "chip_bg",
+      "label": "Achtergrondkleur",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "chip_text_color",
+      "label": "Tekstkleur",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "chip_border_color",
+      "label": "Randkleur",
+      "default": "#d8d8d8"
+    },
+    {
+      "type": "range",
+      "id": "thumb_size",
+      "min": 20,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Afbeelding grootte",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "Chip Stijl (Actief)"
+    },
+    {
+      "type": "color",
+      "id": "active_bg_color",
+      "label": "Achtergrond (actief)",
+      "default": "#FFF3E0"
+    },
+    {
+      "type": "color",
+      "id": "active_text_color",
+      "label": "Tekstkleur (actief)",
+      "default": "#CC6500"
+    },
+    {
+      "type": "color",
+      "id": "active_border_color",
+      "label": "Randkleur (actief)",
+      "default": "#FF7E00"
+    },
+    {
+      "type": "header",
+      "content": "Navigatie Pijl"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg",
+      "label": "Pijl achtergrond",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_icon_color",
+      "label": "Pijl icoon kleur",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border",
+      "label": "Pijl randkleur",
+      "default": "#d8d8d8"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subcollectie navigatie"
+    }
+  ]
+}
+{% endschema %}
