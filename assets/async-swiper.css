@@ -18,6 +18,11 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
+  /* Allow vertical scroll but let Swiper handle horizontal swipe */
+  touch-action: pan-y;
+  -ms-touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* THE critical rule — without this slides stack vertically */

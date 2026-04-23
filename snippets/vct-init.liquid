@@ -42,6 +42,26 @@
     }, 4200);
   }
 
+  /* ── Swiper touch patch ─────────────────────────────────────────── */
+  /* Runs after sliders initialize and forces touch on all instances.  */
+  function patchSwiperTouch(){
+    document.querySelectorAll('.swiper').forEach(function(el){
+      if(el.swiper){
+        el.swiper.params.allowTouchMove = true;
+        el.swiper.allowTouchMove = true;
+        if(el.swiper.params.breakpoints){
+          Object.keys(el.swiper.params.breakpoints).forEach(function(bp){
+            el.swiper.params.breakpoints[bp].allowTouchMove = true;
+            el.swiper.params.breakpoints[bp].simulateTouch = true;
+          });
+        }
+      }
+    });
+  }
+  /* Run once at 800ms and again at 2s to catch lazily-initialized sliders */
+  setTimeout(patchSwiperTouch, 800);
+  setTimeout(patchSwiperTouch, 2000);
+
   /* ── Social proof toasts ────────────────────────────────────────── */
   var toastWrap = document.getElementById('vct-sp-toasts');
   if(!toastWrap) return;

@@ -62,43 +62,50 @@ html { scroll-behavior: smooth; }
  * .l4cl gets class "slider" when Swiper is active — never touch that.
  */
 
-/* ── Override float grid → CSS Grid ─────────────────────────── */
-.m6cl .l4cl:not(.slider),
-.m6pr .l4cl:not(.slider),
-section .l4cl:not(.slider) {
+/*
+ * The theme uses a float/border-left grid with #root-prefixed selectors
+ * (high specificity). We match that specificity with #root here.
+ */
+
+/* ── Desktop: CSS Grid, 4 columns ───────────────────────────── */
+#root .l4cl:not(.slider):not(.list):not(.hr) {
   display: grid !important;
-  grid-template-columns: repeat(var(--vct-cols, 4), 1fr) !important;
+  grid-template-columns: repeat(4, 1fr) !important;
   gap: 20px !important;
-  margin-bottom: 0 !important;
-  /* Clear the old float-based margin-bottom clearfix */
   overflow: visible !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
-/* Responsive columns */
+/* ── Tablet: 3 columns ───────────────────────────────────────── */
 @media (max-width: 1200px) {
-  .m6cl .l4cl:not(.slider),
-  .m6pr .l4cl:not(.slider),
-  section .l4cl:not(.slider) {
-    --vct-cols: 3;
-  }
-}
-@media (max-width: 760px) {
-  .m6cl .l4cl:not(.slider),
-  .m6pr .l4cl:not(.slider),
-  section .l4cl:not(.slider) {
-    --vct-cols: 2;
-    gap: 10px !important;
-    padding: 0 !important;
+  #root .l4cl:not(.slider):not(.list):not(.hr) {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
-/* Each li: reset float/border-left spacing, fill grid cell */
-.l4cl:not(.slider) li {
+/* ── Mobile: 2 columns, proper gap ──────────────────────────── */
+@media (max-width: 760px) {
+  #root .l4cl:not(.slider):not(.list):not(.hr),
+  #root .l4cl.mobile-scroll:not(.slider):not(.list) {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    overflow: visible !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* ── Each li: reset ALL float/border-left spacing ───────────── */
+#root .l4cl:not(.slider):not(.list):not(.hr) > li,
+#root .l4cl.mobile-scroll:not(.slider) > li {
   float: none !important;
   width: auto !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  border-left: none !important;
+  border-left: 0 none !important;
+  border-right: 0 none !important;
   margin: 0 !important;
   padding: 0 !important;
   display: flex !important;
