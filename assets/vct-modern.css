@@ -68,7 +68,9 @@ html { scroll-behavior: smooth; }
  */
 
 /* ── Desktop: CSS Grid, 4 columns ───────────────────────────── */
-#root .l4cl:not(.slider):not(.list):not(.hr) {
+/* NOTE: .mobile-compact is a native horizontal-scroll strip —
+   never override it with a grid or swiping breaks on mobile.    */
+#root .l4cl:not(.slider):not(.list):not(.hr):not(.mobile-compact) {
   display: grid !important;
   grid-template-columns: repeat(4, 1fr) !important;
   gap: 20px !important;
@@ -79,14 +81,14 @@ html { scroll-behavior: smooth; }
 
 /* ── Tablet: 3 columns ───────────────────────────────────────── */
 @media (max-width: 1200px) {
-  #root .l4cl:not(.slider):not(.list):not(.hr) {
+  #root .l4cl:not(.slider):not(.list):not(.hr):not(.mobile-compact) {
     grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
 /* ── Mobile: 2 columns, proper gap ──────────────────────────── */
 @media (max-width: 760px) {
-  #root .l4cl:not(.slider):not(.list):not(.hr),
+  #root .l4cl:not(.slider):not(.list):not(.hr):not(.mobile-compact),
   #root .l4cl.mobile-scroll:not(.slider):not(.list) {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -98,7 +100,7 @@ html { scroll-behavior: smooth; }
 }
 
 /* ── Each li: reset ALL float/border-left spacing ───────────── */
-#root .l4cl:not(.slider):not(.list):not(.hr) > li,
+#root .l4cl:not(.slider):not(.list):not(.hr):not(.mobile-compact) > li,
 #root .l4cl.mobile-scroll:not(.slider) > li {
   float: none !important;
   width: auto !important;
@@ -113,7 +115,7 @@ html { scroll-behavior: smooth; }
 }
 
 /* Grid container: stretch rows so all cards in a row are equal height */
-.l4cl:not(.slider) {
+.l4cl:not(.slider):not(.mobile-compact) {
   align-items: stretch !important;
 }
 
