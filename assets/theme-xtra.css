@@ -11,3 +11,78 @@
     pointer-events: auto !important;
   }
 }
+
+/* ================================
+   Judge.me - thema conflict fixes
+   ================================ */
+
+/* Verwijder oranje ::before van kleine knoppen */
+.jm-review-widget button:before,
+.jm-review-widget .jm-voting-controls__button:before,
+.jm-review-widget .jm-review-highlights__row:before,
+.jm-review-widget .jm-media-grid__item:before,
+.jm-review-widget .jm-media-grid__arrow:before {
+  display: none !important;
+}
+
+/* Primaire knoppen */
+.jm-review-widget .jm-button--primary {
+  display: inline-flex !important;
+  background-color: var(--jm-review-widget-button-color) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+}
+.jm-review-widget .jm-button--primary:before {
+  display: none !important;
+}
+
+/* Secundaire knoppen (Filters) */
+.jm-review-widget .jm-button--secondary {
+  display: inline-flex !important;
+  background-color: var(--jm-review-widget-button-color) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+}
+.jm-review-widget .jm-button--secondary:before {
+  display: none !important;
+}
+
+/* Voting knoppen (thumbs up/down) */
+.jm-review-widget .jm-voting-controls__button {
+  display: inline-flex !important;
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  width: auto !important;
+  min-width: unset !important;
+  color: var(--jm-review-widget-lighter-text-color) !important;
+  cursor: pointer !important;
+}
+
+/* Review highlights rijen */
+.jm-review-widget .jm-review-highlights__row {
+  display: block !important;
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  width: 100% !important;
+  padding: 8px 0 !important;
+  color: var(--jm-review-widget-text-color) !important;
+  cursor: pointer !important;
+}
