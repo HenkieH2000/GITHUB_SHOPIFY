@@ -29,7 +29,13 @@
 		{{ 'screen-settings.css' | asset_url | stylesheet_tag: media: 'screen' }}
 		{{ 'async-swiper.css' | asset_url | stylesheet_tag: media: 'screen' }}
 		{{ 'vct-modern.css' | asset_url | stylesheet_tag: media: 'screen' }}
-		<style>.swiper-wrapper{display:flex!important;flex-direction:row;flex-wrap:nowrap;transition-property:transform;box-sizing:content-box;}.swiper-slide{flex-shrink:0;width:100%;position:relative;transition-property:transform;}</style>
+		<style>
+.swiper-wrapper{display:flex!important;flex-direction:row;flex-wrap:nowrap;transition-property:transform;box-sizing:content-box;}
+.swiper-slide{flex-shrink:0;width:100%;position:relative;transition-property:transform;}
+/* iOS touch fix: prevent parent scroll container from stealing swipe */
+.l4cl.s4wi,.l4ft.s4wi,.l4ts.s4wi,.l4st.s4wi,.l4ps.s4wi,.l4us.s4wi{overflow:hidden!important;touch-action:pan-y!important;-ms-touch-action:pan-y!important;}
+.s4wi .swiper-outer,.s4wi .swiper,.s4wi .swiper-wrapper,.s4wi .swiper-slide{touch-action:pan-y!important;-ms-touch-action:pan-y!important;}
+</style>
 		<noscript><link rel="stylesheet" href="{{ 'async-menu.css' | asset_url }}"></noscript>
 		{%- if template.name == 'blog' or template.name == 'article' -%}
 			<link media="screen" rel="stylesheet" href="{{ 'page-blog.css' | asset_url }}" id="blog-css">

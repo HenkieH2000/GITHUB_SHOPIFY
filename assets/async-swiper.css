@@ -157,3 +157,30 @@
 .swiper-outer > .swiper-wrapper {
   display: flex;
 }
+
+/*
+ * iOS Safari fix: the parent <ul class="l4cl s4wi"> keeps overflow-x:auto
+ * from screen.css which makes iOS treat it as a scroll container and steal
+ * horizontal touch events before Swiper can handle them.
+ * Force overflow:hidden + touch-action:pan-y on every initialised slider so
+ * the browser never tries to native-scroll the wrapper.
+ */
+.l4cl.s4wi,
+.l4ft.s4wi,
+.l4ts.s4wi,
+.l4st.s4wi,
+.l4ps.s4wi,
+.l4us.s4wi {
+  overflow:      hidden !important;
+  touch-action:  pan-y  !important;
+  -ms-touch-action: pan-y !important;
+}
+
+/* Every element inside the slider should also declare pan-y */
+.l4cl.s4wi *,
+.l4ft.s4wi *,
+.l4ts.s4wi *,
+.l4st.s4wi * {
+  touch-action: pan-y !important;
+  -ms-touch-action: pan-y !important;
+}
