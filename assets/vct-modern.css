@@ -46,14 +46,50 @@ html { scroll-behavior: smooth; }
 ══════════════════════════════════════════════════════════════ */
 
 /*
- * .l4cl gets class "slider" when Swiper is active.
- * :not(.slider) ensures we never affect swiper slides.
- *
- * Three problems solved here:
- *  1. White left border  → reset border + background on li
- *  2. Unequal heights    → flex column on card, flex:1 on info area
- *  3. Content too close to edge → consistent padding on inner text
+ * The theme uses a float-based grid with border-left as spacing.
+ * We replace it with CSS Grid for proper gaps and equal heights.
+ * .l4cl gets class "slider" when Swiper is active — never touch that.
  */
+
+/* ── Override float grid → CSS Grid ─────────────────────────── */
+.m6cl .l4cl:not(.slider),
+.m6pr .l4cl:not(.slider),
+section .l4cl:not(.slider) {
+  display: grid !important;
+  grid-template-columns: repeat(var(--vct-cols, 4), 1fr) !important;
+  gap: 20px !important;
+  margin-bottom: 0 !important;
+  /* Clear the old float-based margin-bottom clearfix */
+  overflow: visible !important;
+}
+
+/* Responsive columns */
+@media (max-width: 1200px) {
+  .m6cl .l4cl:not(.slider),
+  .m6pr .l4cl:not(.slider),
+  section .l4cl:not(.slider) {
+    --vct-cols: 3;
+  }
+}
+@media (max-width: 760px) {
+  .m6cl .l4cl:not(.slider),
+  .m6pr .l4cl:not(.slider),
+  section .l4cl:not(.slider) {
+    --vct-cols: 2;
+    gap: 12px !important;
+  }
+}
+
+/* Each li: reset float/border-left spacing, fill grid cell */
+.l4cl:not(.slider) li {
+  float: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  border-left: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+}
 
 /* Grid container: stretch rows so all cards in a row are equal height */
 .l4cl:not(.slider) {
