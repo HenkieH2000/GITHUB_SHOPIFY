@@ -87,7 +87,8 @@ section .l4cl:not(.slider) {
   .m6pr .l4cl:not(.slider),
   section .l4cl:not(.slider) {
     --vct-cols: 2;
-    gap: 12px !important;
+    gap: 10px !important;
+    padding: 0 !important;
   }
 }
 
@@ -96,10 +97,12 @@ section .l4cl:not(.slider) {
   float: none !important;
   width: auto !important;
   min-width: 0 !important;
+  max-width: 100% !important;
   border-left: none !important;
   margin: 0 !important;
   padding: 0 !important;
   display: flex !important;
+  overflow: hidden !important;
 }
 
 /* Grid container: stretch rows so all cards in a row are equal height */
@@ -1330,5 +1333,109 @@ textarea, select {
 
   .vct-cd-num {
     font-size: 18px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   26. MOBILE PRODUCT CARD — complete responsive fix
+   Fixes: overflowing quick-buy form, text overflow, spacing
+══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 760px) {
+
+  /* Card must not overflow its grid cell */
+  .l4cl:not(.slider) .product-card {
+    overflow: hidden !important;
+    min-width: 0 !important;
+  }
+
+  /* Figure: clip the absolute-positioned quick-buy form */
+  .l4cl:not(.slider) .product-card figure {
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  /* Quick-buy form: scale down to fit narrow cards */
+  .l4cl figure form,
+  .l4cl figure .link-btn {
+    left: 4px !important;
+    right: 4px !important;
+    bottom: 4px !important;
+  }
+
+  /* Quantity input: smaller on mobile */
+  .l4cl figure form input[type="number"],
+  .l4cl figure .link-btn input[type="number"] {
+    width: 44px !important;
+    min-width: 0 !important;
+    font-size: 13px !important;
+    padding: 0 4px !important;
+  }
+
+  /* Cart button on mobile: icon-only, smaller */
+  .l4cl figure form button,
+  .l4cl figure .link-btn a {
+    min-width: 0 !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    flex: 1 !important;
+  }
+
+  /* Info area: tighter on mobile */
+  .l4cl:not(.slider) .product-card .s1pi,
+  .l4cl:not(.slider) .product-card .l4if,
+  .l4cl:not(.slider) .product-card > div:not([class*="label"]):not([class*="check"]):not(figure) {
+    padding: 8px 10px 10px !important;
+    gap: 2px !important;
+  }
+
+  /* Title: smaller on mobile, still 3 lines */
+  .l4cl:not(.slider) .product-card h3,
+  .l4cl:not(.slider) .product-card h2,
+  .l4cl:not(.slider) .product-card .s1pi .s1tt,
+  .l4cl:not(.slider) .product-card .s1pi a.s1tt {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    min-height: calc(1.35em * 3) !important;
+    -webkit-line-clamp: 3 !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Vendor: smaller */
+  .l4cl:not(.slider) .product-card .vendor,
+  .l4cl:not(.slider) .product-card .s1vn {
+    font-size: 10px !important;
+  }
+
+  /* Delivery text: one line, truncate */
+  .l4cl:not(.slider) .product-card .product-deliverytime,
+  .l4cl:not(.slider) .product-card [class*="deliver"] {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 10.5px !important;
+  }
+
+  /* Stars + review count: tighter */
+  .l4cl:not(.slider) .product-card .s1rv,
+  .l4cl:not(.slider) .product-card .rating {
+    font-size: 11px !important;
+    gap: 2px !important;
+  }
+
+  /* Price: slightly smaller */
+  .l4cl:not(.slider) .product-card .s1pr,
+  .l4cl:not(.slider) .product-card .price,
+  .l4cl:not(.slider) .product-card p.price {
+    font-size: 14px !important;
+  }
+
+  /* Prevent labels (Sale badge) from overflowing card */
+  .l4cl:not(.slider) .product-card .s1lb,
+  .l4cl:not(.slider) .product-card [class*="label"] {
+    max-width: calc(100% - 8px) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 }
