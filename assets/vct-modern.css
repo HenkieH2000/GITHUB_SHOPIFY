@@ -135,35 +135,46 @@ section .l4cl:not(.slider) {
   transform: scale(1.06);
 }
 
-/* Info area: grows to fill space, pushing price down */
+/* Info area: compact, tight spacing */
 .l4cl:not(.slider) .product-card .s1pi,
 .l4cl:not(.slider) .product-card .l4if,
 .l4cl:not(.slider) .product-card > div:not([class*="label"]):not([class*="check"]):not(figure) {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 14px 16px 16px;
-  gap: 4px;
+  padding: 12px 14px 14px;
+  gap: 3px;
 }
 
-/* Product title: grows to fill, price anchors to bottom */
+/* Title: clamp to 3 lines — no more, no less */
 .l4cl:not(.slider) .product-card .s1pi .s1tt,
 .l4cl:not(.slider) .product-card .s1pi h3,
 .l4cl:not(.slider) .product-card .s1pi h2,
-.l4cl:not(.slider) .product-card .s1pi a.s1tt {
-  flex: 1;
-  margin-bottom: 8px;
+.l4cl:not(.slider) .product-card .s1pi a.s1tt,
+.l4cl:not(.slider) .product-card h3,
+.l4cl:not(.slider) .product-card h2 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  margin-bottom: 6px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  /* min-height keeps short titles from collapsing */
+  min-height: calc(1.4em * 3);
 }
 
-/* Price row — enough breathing room from the bottom edge */
+/* Price row — sits directly after content, no big gap */
 .l4cl:not(.slider) .product-card .s1pr,
 .l4cl:not(.slider) .product-card .price,
 .l4cl:not(.slider) .product-card p.price {
-  margin: 4px 0 0;
-  padding-bottom: 2px;
+  margin: 6px 0 0;
+  padding: 0;
   font-size: 16px;
   font-weight: 800;
   color: var(--vct-navy);
+  /* Push to bottom of card when inside flex column */
+  margin-top: auto;
 }
 
 /* ── Hover: lift + deepen shadow + orange glow ───────────────── */
@@ -304,61 +315,89 @@ div.f8pr {
    6. BUY BUTTONS — physical press, no auto-pulse
 ══════════════════════════════════════════════════════════════ */
 
-/* Yellow buy button (overlay-buy_button) */
-.overlay-buy_button:not(:disabled) {
-  border-radius: var(--b2r);
-  box-shadow: 0 4px 14px rgba(255,209,0,.28);
+/*
+ * The theme uses --btn_sh_inner: inset 2px -2px 0 rgba(0,0,0,.1)
+ * which creates a visible 3D pressed border on all buttons.
+ * We kill it globally and replace with a clean flat style.
+ */
+
+/* Kill the inset 3D shadow on ALL buttons sitewide */
+:root {
+  --btn_sh_inner: none !important;
+  --btn_sh_inner_c: transparent !important;
+}
+
+/* Yellow buy button (overlay-buy_button) — clean flat */
+.link-btn a.overlay-buy_button,
+button.overlay-buy_button,
+.overlay-buy_button button,
+a.overlay-buy_button {
+  border-radius: 99px !important;
+  box-shadow: none !important;
+  outline: none !important;
   transition:
-    box-shadow  0.22s var(--vct-ease),
-    filter      0.22s var(--vct-ease),
-    transform   0.14s var(--vct-ease) !important;
+    filter      0.18s var(--vct-ease),
+    transform   0.12s var(--vct-ease) !important;
 }
 
-.overlay-buy_button:not(:disabled):hover {
-  box-shadow: 0 6px 22px rgba(255,209,0,.42);
-  filter: brightness(1.05);
+.link-btn a.overlay-buy_button:hover,
+button.overlay-buy_button:hover,
+a.overlay-buy_button:hover {
+  filter: brightness(1.06) !important;
+  box-shadow: none !important;
+  transform: translateY(-1px) !important;
 }
 
-.overlay-buy_button:not(:disabled):active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 8px rgba(255,209,0,.22);
-  transition-duration: 0.08s !important;
+.link-btn a.overlay-buy_button:active,
+button.overlay-buy_button:active,
+a.overlay-buy_button:active {
+  transform: translateY(1px) !important;
+  filter: brightness(0.97) !important;
+  transition-duration: 0.06s !important;
 }
 
 /* Orange primary button */
 .overlay-primary:not(:disabled) {
-  border-radius: var(--b2r);
+  border-radius: 99px;
+  box-shadow: none;
+  outline: none;
   transition:
-    box-shadow  0.22s var(--vct-ease),
-    filter      0.22s var(--vct-ease),
-    transform   0.14s var(--vct-ease);
+    filter      0.18s var(--vct-ease),
+    transform   0.12s var(--vct-ease);
 }
 
 .overlay-primary:not(:disabled):hover {
-  filter: brightness(1.05);
-  box-shadow: 0 4px 16px rgba(255,126,0,.30);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .overlay-primary:not(:disabled):active {
   transform: translateY(1px);
-  transition-duration: 0.08s;
+  filter: brightness(0.97);
+  transition-duration: 0.06s;
 }
 
-/* Generic button baseline */
-.btn, button.button, a.button, input[type="submit"].button {
-  border-radius: var(--b2r);
+/* Generic button baseline — no inset shadow */
+.btn, button.button, a.button, input[type="submit"].button,
+.link-btn a, .link-btn button {
+  border-radius: 99px;
+  box-shadow: none !important;
+  outline: none;
   transition:
-    box-shadow  0.22s var(--vct-ease),
-    filter      0.22s var(--vct-ease),
-    transform   0.14s var(--vct-ease);
+    filter      0.18s var(--vct-ease),
+    transform   0.12s var(--vct-ease);
+}
+
+.btn:hover, button.button:hover, a.button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .btn:active,
 button.button:active,
-a.button:active,
-input[type="submit"].button:active {
+a.button:active {
   transform: translateY(1px);
-  transition-duration: 0.08s;
+  transition-duration: 0.06s;
 }
 
 /* ══════════════════════════════════════════════════════════════
