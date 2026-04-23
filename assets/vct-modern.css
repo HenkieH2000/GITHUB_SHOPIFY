@@ -13,6 +13,17 @@
  */
 
 /* ══════════════════════════════════════════════════════════════
+   0. BODY BACKGROUND FIX
+   The theme sets body{background: var(--custom_footer_bg_bottom)}
+   (dark navy) so the footer colour bleeds through below the page.
+   On short pages this creates a thick dark bar under the footer.
+   Fix: reset body background to white; footer handles its own bg.
+══════════════════════════════════════════════════════════════ */
+html, body {
+  background: #fff !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
    1. GLOBAL TOKENS
 ══════════════════════════════════════════════════════════════ */
 :root {
