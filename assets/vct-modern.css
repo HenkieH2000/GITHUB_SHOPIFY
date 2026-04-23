@@ -48,26 +48,149 @@ html { scroll-behavior: smooth; }
 /*
  * .l4cl gets class "slider" when Swiper is active.
  * :not(.slider) ensures we never affect swiper slides.
+ *
+ * Three problems solved here:
+ *  1. White left border  → reset border + background on li
+ *  2. Unequal heights    → flex column on card, flex:1 on info area
+ *  3. Content too close to edge → consistent padding on inner text
  */
+
+/* Grid container: stretch rows so all cards in a row are equal height */
+.l4cl:not(.slider) {
+  align-items: stretch !important;
+}
+
+/* Each li/card: flex column so price always sits at the bottom */
 .l4cl:not(.slider) .product-card {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  background: #fff;
   border-radius: var(--b2r);
   box-shadow: var(--vct-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
   transition:
     box-shadow var(--vct-dur-base) var(--vct-ease),
     transform  var(--vct-dur-base) var(--vct-ease);
   will-change: transform;
-  overflow: hidden;
 }
 
+/* Image wrapper: fixed aspect ratio, no shrink */
+.l4cl:not(.slider) .product-card > figure,
+.l4cl:not(.slider) .product-card figure:first-child {
+  flex-shrink: 0;
+  border-radius: var(--b2r) var(--b2r) 0 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* Image zoom on hover — GPU-safe */
+.l4cl:not(.slider) .product-card figure img {
+  transition: transform 0.55s var(--vct-ease);
+  display: block;
+  width: 100%;
+}
+
+.l4cl:not(.slider) .product-card:hover figure img {
+  transform: scale(1.06);
+}
+
+/* Info area: grows to fill space, pushing price down */
+.l4cl:not(.slider) .product-card .s1pi,
+.l4cl:not(.slider) .product-card .l4if,
+.l4cl:not(.slider) .product-card > div:not([class*="label"]):not([class*="check"]):not(figure) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px 16px;
+  gap: 4px;
+}
+
+/* Product title: grows to fill, price anchors to bottom */
+.l4cl:not(.slider) .product-card .s1pi .s1tt,
+.l4cl:not(.slider) .product-card .s1pi h3,
+.l4cl:not(.slider) .product-card .s1pi h2,
+.l4cl:not(.slider) .product-card .s1pi a.s1tt {
+  flex: 1;
+  margin-bottom: 8px;
+}
+
+/* Price row — enough breathing room from the bottom edge */
+.l4cl:not(.slider) .product-card .s1pr,
+.l4cl:not(.slider) .product-card .price,
+.l4cl:not(.slider) .product-card p.price {
+  margin: 4px 0 0;
+  padding-bottom: 2px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--vct-navy);
+}
+
+/* ── Hover: lift + deepen shadow + orange glow ───────────────── */
 .l4cl:not(.slider) .product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--vct-shadow-md);
+  transform: translateY(-7px);
+  box-shadow:
+    var(--vct-shadow-md),
+    0 0 0 1px rgba(255,126,0,.10),
+    0 20px 40px -12px rgba(255,126,0,.18);
 }
 
 .l4cl:not(.slider) .product-card:active {
-  transform: translateY(0px);
+  transform: translateY(-2px);
   box-shadow: var(--vct-shadow-sm);
   transition-duration: 0.08s;
+}
+
+/* ── Quick-buy button: hidden until hover ────────────────────── */
+.l4cl:not(.slider) .product-card .quick-buy,
+.l4cl:not(.slider) .product-card [class*="quick-buy"],
+.l4cl:not(.slider) .product-card .f8qa {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.22s var(--vct-ease),
+    transform 0.22s var(--vct-ease);
+}
+
+.l4cl:not(.slider) .product-card:hover .quick-buy,
+.l4cl:not(.slider) .product-card:hover [class*="quick-buy"],
+.l4cl:not(.slider) .product-card:hover .f8qa {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Vendor / brand label ────────────────────────────────────── */
+.l4cl:not(.slider) .product-card .vendor,
+.l4cl:not(.slider) .product-card .s1vn {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: rgba(3,10,34,.38);
+  margin-bottom: 2px;
+}
+
+/* ── Rating row ──────────────────────────────────────────────── */
+.l4cl:not(.slider) .product-card .s1rv,
+.l4cl:not(.slider) .product-card .rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(3,10,34,.5);
+  margin-top: 4px;
+}
+
+/* ── Delivery badge ──────────────────────────────────────────── */
+.l4cl:not(.slider) .product-card .product-deliverytime,
+.l4cl:not(.slider) .product-card [class*="deliver"] {
+  font-size: 11.5px;
+  margin-top: 6px;
+  padding: 0;
 }
 
 /* ══════════════════════════════════════════════════════════════
