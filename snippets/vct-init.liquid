@@ -43,24 +43,35 @@
   }
 
   /* ── Swiper touch patch ─────────────────────────────────────────── */
-  /* Runs after sliders initialize and forces touch on all instances.  */
+  /* Forces touch + correct mobile slidesPerView on all instances.     */
   function patchSwiperTouch(){
     document.querySelectorAll('.swiper').forEach(function(el){
-      if(el.swiper){
-        el.swiper.params.allowTouchMove = true;
-        el.swiper.allowTouchMove = true;
-        if(el.swiper.params.breakpoints){
-          Object.keys(el.swiper.params.breakpoints).forEach(function(bp){
-            el.swiper.params.breakpoints[bp].allowTouchMove = true;
-            el.swiper.params.breakpoints[bp].simulateTouch = true;
-          });
-        }
+      var sw = el.swiper;
+      if(!sw) return;
+      /* Force touch on base params */
+      sw.params.allowTouchMove = true;
+      sw.allowTouchMove        = true;
+      sw.params.simulateTouch  = true;
+      /* Patch every breakpoint */
+      if(sw.params.breakpoints){
+        Object.keys(sw.params.breakpoints).forEach(function(bp){
+          sw.params.breakpoints[bp].allowTouchMove = true;
+          sw.params.breakpoints[bp].simulateTouch  = true;
+          /* Mobile breakpoint 0: ensure 2 visible slides so swiping is meaningful */
+          if(bp === '0' && !sw.params.breakpoints[bp].slidesPerView){
+            sw.params.breakpoints[bp].slidesPerView = 2;
+            sw.params.breakpoints[bp].spaceBetween  = 12;
+          }
+        });
       }
+      /* Re-apply so changes are visible immediately */
+      try { sw.update(); } catch(e){}
     });
   }
-  /* Run once at 800ms and again at 2s to catch lazily-initialized sliders */
-  setTimeout(patchSwiperTouch, 800);
-  setTimeout(patchSwiperTouch, 2000);
+  /* Run at 600ms, 1.5s and 3s to catch sliders that load late */
+  setTimeout(patchSwiperTouch, 600);
+  setTimeout(patchSwiperTouch, 1500);
+  setTimeout(patchSwiperTouch, 3000);
 
   /* ── Social proof toasts ────────────────────────────────────────── */
   var toastWrap = document.getElementById('vct-sp-toasts');
